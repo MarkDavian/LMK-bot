@@ -1,0 +1,28 @@
+version: '3.4'
+
+services:
+  jokes:
+    image: K3nJokes
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      - MONGO_HOST=mongodb://mongodb/
+      - MONGO_PORT=27017
+    depends_on:
+      - mongodb
+    ports:
+      - "0.0.0.0:1403:1403"
+    links:
+      - mongodb:mongo
+
+  mongodb:
+    image: mongo:4.4.7-focal
+    volumes:
+      - mongo:/data/db
+
+
+volumes:
+  mongo:
+
+
