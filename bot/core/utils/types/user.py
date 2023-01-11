@@ -1,3 +1,6 @@
+from shedule import GroupShedule
+
+
 class UserInfo:
     group: str
     place: str
@@ -16,14 +19,17 @@ class User:
     _id: int
     group: str
     place: str
+    shedule: GroupShedule
 
     is_admin: bool
 
     def __init__(self, 
             id: int, 
-            userInfo: UserInfo) -> None:
+            userInfo: UserInfo,
+            shedule: GroupShedule) -> None:
         self._id = id
         self.group = userInfo.group
         self.place = userInfo.place
+        self.shedule = shedule
 
 
