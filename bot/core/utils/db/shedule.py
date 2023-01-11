@@ -1,9 +1,11 @@
-from dataclasses import dataclass
 import pymongo
 # from motor.motor_asyncio import AsyncIOMotorClient
 
 from config import settings
-from bot.core.utils.types import UserInfo, GroupShedule
+
+from bot.core.utils.types.user import UserInfo
+from bot.core.utils.types.shedule import GroupShedule, WeekShedule, WeekSheduleFactory
+
 
 class SheduleDB:
     def __init__(self) -> None:
@@ -15,35 +17,21 @@ class SheduleDB:
         self._database = client['main']
         self._collection = self._database['shedule']
 
-    def get_shedule(self, userInfo: UserInfo) -> dict:
+    def get_shedule(self, userInfo: UserInfo) -> WeekShedule:
         user_group = userInfo.group
         user_place = userInfo.place
 
         doc = self._collection.find_one(
             {
-                'user_group': user_group,
-                'user_place': user_place
+                'Группа': user_group,
+                'Место': user_place
             }
         )
+        weekShedule = WeekSheduleFactory(doc).get_week_shedule()
 
-        return doc
+        return weekShedule
 
-    def save_group_shedule(self, shedule: GroupShedule, userInfo: UserInfo):
-        shedule = {
-            'group': 'ПИ-19.2',
-            'place': 'LMK',
-            'shedule': {
-                'Monday': {
-                    1: 'Математика',
-                    2: 'География'
-                },
-                'Tuesday': {
-                    1: 'Математика',
-                    2: 'География'
-                }
-
-            }
-        }
+    def save_group_shedule(self, shedule: GroupShedule) -> None:
         r = self._collection.insert_one(
-            shedule
+            shedule.dict()
         )
