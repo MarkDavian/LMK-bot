@@ -6,7 +6,11 @@ from user import UserInfo
 class _SHEDULE_DAY:
     monday = 'Понедельник'
     tuesday = 'Вторник'
-    wensday = 'Среда'
+    wednesday = 'Среда'
+    thursday = 'Четверг'
+    friday = 'Пятница'
+    saturday = 'Суббота'
+    sunday = 'Воскресенье'
 
 
 class Subject:
