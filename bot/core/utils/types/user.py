@@ -1,9 +1,9 @@
-class Group:
-    name: str
+class UserInfo:
+    group: str
     place: str
 
-    def __init__(self, name: str, place: str) -> None:
-        self.name = name
+    def __init__(self, group: str, place: str) -> None:
+        self.group = group
         self.place = place
 
 
@@ -21,9 +21,9 @@ class User:
 
     def __init__(self, 
             id: int, 
-            group: Group) -> None:
+            userInfo: UserInfo) -> None:
         self._id = id
-        self.group = group.name
-        self.place = group.place
+        self.group = userInfo.group
+        self.place = userInfo.place
 
 
