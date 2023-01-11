@@ -1,7 +1,7 @@
 from bot.core.utils.db.shedule import SheduleDB
 
 from bot.core.utils.types.user import UserInfo
-from bot.core.utils.types.shedule import GroupShedule, WeekShedule, WeekSheduleFactory
+from bot.core.utils.types.shedule import GroupShedule, WeekShedule
 
 
 class CollectorProxy_SheduleDB:

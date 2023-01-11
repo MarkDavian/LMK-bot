@@ -1,5 +1,5 @@
 from shedule import (
-    _SHEDULE_DAY, 
+    SHEDULE_DAY, 
     Subject, 
     WeekShedule, 
     WeekSheduleFactory, 
@@ -11,7 +11,7 @@ from shedule import (
 
 
 monday_shedule = DayShedule(
-    _SHEDULE_DAY.monday,
+    SHEDULE_DAY.monday,
     [
         Subject('Математика', '8:00-9:30'),
         Subject('Английский', '9:40-11:10'),
@@ -21,7 +21,7 @@ monday_shedule = DayShedule(
 )
 
 tue_shedule = DayShedule(
-    _SHEDULE_DAY.tuesday,
+    SHEDULE_DAY.tuesday,
     [
         Subject('Математика', '8:00-9:30'),
         Subject('Английский', '9:40-11:10'),

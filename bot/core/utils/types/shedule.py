@@ -4,7 +4,7 @@ from user import UserInfo
 
 
 @dataclass(frozen=True)
-class _SHEDULE_DAY:
+class SHEDULE_DAY:
     monday = 'Понедельник'
     tuesday = 'Вторник'
     wednesday = 'Среда'
@@ -53,7 +53,7 @@ class DayShedule:
     _name: str
     _subjects: list[Subject]
 
-    def __init__(self, day: _SHEDULE_DAY, subjects: list[Subject]) -> None:
+    def __init__(self, day: SHEDULE_DAY, subjects: list[Subject]) -> None:
         self._name = day
         self._subjects = subjects
 
@@ -121,7 +121,7 @@ class GroupShedule:
         self.place = userInfo.place
         self.shedule = shedule
 
-    def get_shedule_for(self, day: _SHEDULE_DAY) -> DayShedule:
+    def get_shedule_for(self, day: SHEDULE_DAY) -> DayShedule:
         shedule = self.shedule.day(day)
         return shedule
 
