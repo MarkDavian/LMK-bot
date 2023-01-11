@@ -5,6 +5,8 @@ class Settings(BaseSettings):
     """Init of all settings
     """
     bot_api_key: str
+    admin_id: int
+
 
     class Config:
         env_file = '.env'
