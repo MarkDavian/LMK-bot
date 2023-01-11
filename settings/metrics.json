@@ -1,5 +1,13 @@
 {
     "metrics": [
 
-    ]
+    ],
+
+    "storage": "CSV",
+
+    "available-storage-types": [
+        "CSV",
+        "Mongo",
+        "Text"
+    ]  
 }
