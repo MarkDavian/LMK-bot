@@ -25,3 +25,4 @@ class MetricsCollector:
 
     def new_metric(self, metric_name: str) -> None:
         self.metrics.append(metric_name)
+        self.storage.new_metric(metric_name)
