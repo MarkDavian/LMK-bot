@@ -1,8 +1,8 @@
 version: '3.4'
 
 services:
-  jokes:
-    image: K3nJokes
+  bot:
+    image: studotbot
     build:
       context: .
       dockerfile: ./Dockerfile
@@ -10,11 +10,21 @@ services:
       - MONGO_HOST=mongodb://mongodb/
       - MONGO_PORT=27017
     depends_on:
+      - pdfparser
       - mongodb
     ports:
-      - "0.0.0.0:1403:1403"
+      - "0.0.0.0:80:1905"
     links:
       - mongodb:mongo
+      - pdfparser:pdfparser
+
+  pdfparser:
+    image: sb_pdfparser
+    build:
+      context: ./PDFParser
+      dockerfile: ./Dockerfile
+    ports:
+      - "0.0.0.0:80:1443"
 
   mongodb:
     image: mongo:4.4.7-focal
