@@ -3,7 +3,7 @@ from config import settings
 from bot.core.statistics.collector.errors import _MetricNameError
 from bot.core.statistics.collector.metrics_storage import (
     MetricsStorageFactory, 
-    BaseMetricsStorage
+    IMetricsStorage
 )
 
 
@@ -12,9 +12,9 @@ class MetricsCollector:
 
     def __init__(self) -> None:
         self.metrics = settings.metrics['metrics']    
-        self.storage: BaseMetricsStorage = MetricsStorageFactory.get_storage(settings.metrics['storage'])
+        self.storage: IMetricsStorage = MetricsStorageFactory.get_storage(settings.metrics['storage'])
 
-    def new_call(self, metric_name: str, *args) -> None:
+    def collect_new(self, metric_name: str, *args) -> None:
         if metric_name not in self.metrics:
             raise _MetricNameError(f'Metric name ({metric_name}) is not defined')
 
@@ -23,6 +23,3 @@ class MetricsCollector:
     def _save_metric(self, metric_name: str, *args) -> None:
         self.storage.save(metric_name, args)
 
-    def new_metric(self, metric_name: str) -> None:
-        self.metrics.append(metric_name)
-        self.storage.new_metric(metric_name)
