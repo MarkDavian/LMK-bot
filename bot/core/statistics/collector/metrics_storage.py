@@ -10,7 +10,7 @@ from bot.core.statistics.collector.errors import _StorageTypeError, _StorageFile
 
 class IMetricsStorage:
     def save(self, metric_name: str, *args) -> None:
-        self._save_to_storage(metric_name, args)
+        self._save_to_storage(metric_name, *args)
 
     def new_metric(self, metric_name: str) -> None:
         self._create_new_metric(metric_name)
