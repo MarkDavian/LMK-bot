@@ -21,7 +21,7 @@ class Settings(BaseSettings):
     tz_info = timezone(timedelta(hours=_TZ_OFFSET), name=_TZ_NAME) 
 
     metrics = settings_json['metrics']
-    metrics_filepath = 'database/metrics/metrics'
+    metrics_filepath = metrics['filepath']
 
 
     class Config:
