@@ -5,6 +5,7 @@
     },
 
     "metrics": {
+        "filepath": "database/metrics/metrics",
         "fields": [
             "Count"    
         ],
