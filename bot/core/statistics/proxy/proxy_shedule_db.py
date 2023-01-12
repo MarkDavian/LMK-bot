@@ -12,7 +12,7 @@ class CollectorProxy_SheduleDB:
         self.db = shedDB
 
     def get_shedule(self, userInfo: UserInfo) -> WeekShedule:
-        self.metrics.new_call('Get shedule', userInfo.group, userInfo.place)
+        self.metrics.collect_new('Get shedule', userInfo.group, userInfo.place)
         return self.db.get_shedule(userInfo)
 
     def save_group_shedule(self, shedule: GroupShedule) -> None:
