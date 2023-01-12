@@ -1,7 +1,7 @@
 from config import settings
 
+from bot.core.statistics.collector.errors import _MetricNameError
 from bot.core.statistics.collector.metrics_storage import (
-    _MetricNameError, 
     MetricsStorageFactory, 
     BaseMetricsStorage
 )
