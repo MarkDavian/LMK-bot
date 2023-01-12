@@ -31,15 +31,18 @@ class CSVMetricsStorage(IMetricsStorage):
     def __init__(self) -> None:
         """Get CSV file heads with metrcis
         """
-        self.filepath = settings.metrics_filepath+'.csv'
+        self._init_filepath()
 
         default_heads = [
             'Date', 'Time', 'Metric' # And then metrics
         ]
-        metrics = settings.metrics['metrics']
+        metrics = settings.metrics['fields']
         self.heads = default_heads + metrics
 
         self._accurate_csv_file()
+
+    def _init_filepath(self) -> None:
+        self.filepath = settings.metrics_filepath+'.csv'
 
     def _accurate_csv_file(self) -> None:
         if not os.path.isfile(self.filepath):
@@ -64,22 +67,18 @@ class CSVMetricsStorage(IMetricsStorage):
         data = [
             [date, time, metric_name, *args]
         ]
-        
+
         df = pd.DataFrame(data, columns=self.heads)
         self._save_df(df)
 
 
 class TextMetricsStorage(CSVMetricsStorage):
     def __init__(self) -> None:
+        super().__init__()
+
+    @override
+    def _init_filepath(self) -> None:
         self.filepath = settings.metrics_filepath+'.txt'
-
-        default_heads = [
-            'Date', 'Time', 'Metric' # And then metrics
-        ]
-        metrics = settings.metrics['metrics']
-        self.heads = default_heads + metrics
-
-        self._accurate_csv_file()
 
     @override
     def _save_df(self, df: pd.DataFrame) -> None:
