@@ -3,6 +3,10 @@
 
     ],
 
+    "params": [
+        "count"
+    ],
+
     "storage": "CSV",
 
     "available-storage-types": [
