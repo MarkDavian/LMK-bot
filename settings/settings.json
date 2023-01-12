@@ -2,5 +2,17 @@
     "timezone": {
         "name": "MSC",
         "offset": 3
-    }
+    },
+
+    "metrics": {
+        "fields": [
+            "Count"    
+        ],
+        "storage": "CSV",
+        "available-storage-types": [
+            "CSV",
+            "Mongo",
+            "Text"
+        ]  
+    }   
 }
