@@ -1,10 +1,6 @@
 {
     "metrics": [
-
-    ],
-
-    "params": [
-        "count"
+        "Count"
     ],
 
     "storage": "CSV",
