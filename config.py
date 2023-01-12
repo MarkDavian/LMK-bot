@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     """
     bot_api_key: str
     admin_id: int
+    server_url: str
     metrics = metrics_json
 
 
