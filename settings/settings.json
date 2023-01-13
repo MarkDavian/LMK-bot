@@ -9,6 +9,7 @@
         "fields": [
             "Count"    
         ],
+        "timing": false,
         "storage": "CSV",
         "available-storage-types": [
             "CSV",
