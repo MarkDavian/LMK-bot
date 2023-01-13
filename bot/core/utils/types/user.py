@@ -2,8 +2,15 @@ from shedule import GroupShedule
 
 
 class UserInfo:
+    """
+    _id: ID in social network,
+    _group: User group in school,
+    _from: Place that is user from.
+    """
+    id: int
     group: str
     place: str
+    social: str
 
     def __init__(self, group: str, place: str) -> None:
         self.group = group
@@ -11,25 +18,14 @@ class UserInfo:
 
 
 class User:
-    """
-    _id: ID in social network,
-    _group: User group in school,
-    _from: Place that is user from.
-    """
-    _id: int
-    group: str
-    place: str
+    info: UserInfo
+    is_admin: bool
     shedule: GroupShedule
 
-    is_admin: bool
-
     def __init__(self, 
-            id: int, 
             userInfo: UserInfo,
             shedule: GroupShedule) -> None:
-        self._id = id
-        self.group = userInfo.group
-        self.place = userInfo.place
+        self.info = userInfo
         self.shedule = shedule
 
 
