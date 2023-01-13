@@ -36,6 +36,6 @@ class PDFParser:
     def extract_dict(self) -> dict:
         return self.parser.dict()
 
-    def extract_json(self) -> str:
-        return self.parser.json()
+    def extract_json(self, output: str) -> str:
+        return self.parser.json(output=output)
 
