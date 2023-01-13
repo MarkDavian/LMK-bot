@@ -1,1 +1,0 @@
-from bot.core.data_parser.csv.parser import CSVParser
