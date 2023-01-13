@@ -1,2 +1,2 @@
-from bot.core.statistics.collector.collector import MetricsCollector
+from bot.core.statistics.metrics.metrics import Metrics
 
