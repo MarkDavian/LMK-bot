@@ -7,7 +7,10 @@
     "metrics": {
         "filepath": "database/metrics/metrics",
         "fields": [
-            "Count"    
+            "Place",
+            "Group",
+            "UserId",
+            "Social"    
         ],
         "timing": false,
         "storage": "CSV",
