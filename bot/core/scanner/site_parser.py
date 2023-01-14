@@ -25,13 +25,8 @@ class SiteParser:
 
     def __init__(self) -> None:
         self.url = 'http://www.lmk-lipetsk.ru/main_razdel/shedule/index.php'
-        self._download_html()
 
-    def _download_html(self):
-        r = requests.get(self.url)
-        self.html = r.text
-
-    def parse(self):
+    def parse(self, html_text: str):
         """Find exactly 
         """
         soup = BeautifulSoup(self.html, features="html5lib")
