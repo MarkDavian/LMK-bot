@@ -16,3 +16,6 @@ class CollectorProxy_SheduleDB:
 
     def save_group_shedule(self, shedule: GroupShedule) -> None:
         self.db.save_group_shedule(shedule)
+
+
+sheduleDB = CollectorProxy_SheduleDB(SheduleDB())
