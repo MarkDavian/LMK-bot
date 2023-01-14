@@ -1,6 +1,8 @@
+# from overrides import override
+from typing import Union
 from dataclasses import dataclass
 
-from user import UserInfo
+from userinfo import UserInfo
 
 
 @dataclass(frozen=True)
@@ -13,6 +15,28 @@ class SHEDULE_DAY:
     saturday = 'Суббота'
     sunday = 'Воскресенье'
 
+    WEEKDAYS = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье']
+    MONTHS = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октрябрь', 'Ноябрь', 'Декабрь']
+
+
+@dataclass(frozen=True)
+class SHEDULE_TIME:
+    one = ('8:00', '9:30')
+    two = ('9:40', '11:10')
+    three = ('11:40', '13:10')
+    hour = ('13:30', '14:10')
+    four = ('14:20', '15:50')
+    five = ('16:00', '17:30')
+    six = ('17:40', '19:10')
+    seven = ('19:20', '20:50')
+
+    subjects = [one, two, three, hour, four, five, six, seven]
+
+    def __getitem__(self, item: int) -> tuple[str, str]:
+        item = item-1
+        return self.subjects[item]
+
+
 
 class Subject:
     """Subject class for representive subjects
@@ -23,11 +47,14 @@ class Subject:
     """
 
     name: str
-    time: str
+    time: tuple[str]
 
-    def __init__(self, name: str, time) -> None:
+    def __init__(self, name: str, time: Union[tuple[str], str]) -> None:
         self.name = name
         self.time = time
+        if isinstance(time, str):
+            time = time.split('-')
+            self.time = (time[0], time[1])
 
     def __str__(self) -> str:
         return self.__dict__().__str__()
@@ -37,12 +64,17 @@ class Subject:
 
     def __dict__(self) -> dict:
         return {
-            "Предмет": self.name,
-            "Время": self.time
+            "Пара": self.name,
+            "Время": f"{self.time[0]}-{self.time[1]}"
         }
 
 
-class DayShedule:
+class IShedule:
+    def dict(self) -> dict:
+        ...
+
+
+class DayShedule(IShedule):
     """Represent of a day shedule
 
     Attributes:
@@ -57,6 +89,9 @@ class DayShedule:
         self._name = day
         self._subjects = subjects
 
+        keys = [i for i in range(1, 1+len(self._subjects))]
+        self.shedule = dict(zip(keys, self._subjects))
+
     @property
     def name(self) -> str:
         return self._name
@@ -65,17 +100,15 @@ class DayShedule:
     def subjects(self) -> list[Subject]:
         return self._subjects
 
-    def dict(self):
-        keys = [i for i in range(1, 1+len(self._subjects))]
-        new_dict = dict(zip(keys, self._subjects))
-
-        return new_dict
+    # @override
+    def dict(self) -> dict:
+        return self.shedule
 
     def __repr__(self) -> str:
-        return self.dict()
+        return self.dict().__str__()
 
 
-class WeekShedule:
+class WeekShedule(IShedule):
     """
     Represent of a week shedule.
     This is a list of DayShedule
@@ -87,6 +120,7 @@ class WeekShedule:
 
         self.week_shedule = dict(zip(days, shedule))
 
+    # @override
     def dict(self) -> dict:
         return self.week_shedule
 
@@ -103,7 +137,7 @@ class WeekShedule:
         return con
 
 
-class GroupShedule:
+class GroupShedule(IShedule):
     """Represent User group info
 
     Attributes:
@@ -113,6 +147,7 @@ class GroupShedule:
     """
 
     group: str
+    course: int
     place: str
     shedule: WeekShedule
 
@@ -129,6 +164,7 @@ class GroupShedule:
         shedule = self.shedule.days_with(subject)
         return shedule
 
+    # @override
     def dict(self):
         d = {
             'Группа': self.group,
@@ -138,42 +174,76 @@ class GroupShedule:
         return d
 
 
-class WeekSheduleFactory:
-    """Needs to build WeekShedule from a dict
-    """
-
+class ISheduleFactory:
     def __init__(self, document: dict) -> None:
+        self.shedule = self._process_doc(document)
+
+    def get(self) -> IShedule:
+        return self.shedule
+
+    def _process_doc(self, document: dict) -> None:
+        """Must be overided
+        """
+        ...
+
+
+class DaySheduleFactory(ISheduleFactory):
+    """Build DayShedule from a dict
+    """
+    # @override
+    def _process_doc(self, document: dict) -> None:
+        # {
+        #     'Понедельник': {
+        #         1: {
+        #             "Пара": "Математика",
+        #             "Время": "8:00-9:30"
+        #         }
+
+        #     }
+        # }
+        day = list(document.keys())[0]
+        subs = list(document.values())[0]
+
+        shedule = DayShedule(
+            day=day,
+            subjects=[
+                Subject(sub['Пара'], sub['Время']) 
+                for sub in subs.values()
+            ]
+        )
+        return shedule
+
+
+class WeekSheduleFactory(ISheduleFactory):
+    """Build WeekShedule from a dict
+    """
+    def _process_doc(self, document: dict) -> WeekShedule:
         days = []
         for day, shedule in document.items():
             days.append(
                 DayShedule(
                     day=day,
                     subjects=[
-                        Subject(sub['Предмет'], sub['Время']) 
+                        Subject(sub['Пара'], sub['Время']) 
                         for sub in shedule.values()
                     ]
                 )
             )
-        self.weekShedule = WeekShedule(days)
-
-    def get_week_shedule(self) -> WeekShedule:
-        return self.weekShedule
+        return WeekShedule(days)
 
 
-class GroupSheduleFactory:
-    """Needs to build GroupShedule from a dict
+class GroupSheduleFactory(ISheduleFactory):
+    """Build GroupShedule from a dict
     """
-    def __init__(self, document: dict) -> None:
+    def _process_doc(self, document: dict) -> GroupShedule:
         userInfo = UserInfo(
                 group=document['Группа'],
                 place=document['Место']
         )
-        weekShedule = WeekSheduleFactory(document['Расписание']).get_week_shedule()
+        weekShedule = WeekSheduleFactory(document['Расписание']).get()
 
-        self.group_shedule = GroupShedule(
+        groupShedule = GroupShedule(
             userInfo=userInfo,
             shedule=weekShedule
         )
-
-    def get_group_shedule(self) -> GroupShedule:
-        return self.group_shedule
+        return groupShedule
