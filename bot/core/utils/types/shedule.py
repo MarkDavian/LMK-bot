@@ -2,7 +2,7 @@
 from typing import Union
 from dataclasses import dataclass
 
-from userinfo import UserInfo
+from .userinfo import UserInfo
 
 
 @dataclass(frozen=True)
@@ -30,12 +30,7 @@ class SHEDULE_TIME:
     six = ('17:40', '19:10')
     seven = ('19:20', '20:50')
 
-    subjects = [one, two, three, hour, four, five, six, seven]
-
-    def __getitem__(self, item: int) -> tuple[str, str]:
-        item = item-1
-        return self.subjects[item]
-
+    SUBJECTS = [one, two, three, hour, four, five, six, seven]
 
 
 class Subject:

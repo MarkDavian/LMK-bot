@@ -1,0 +1,1 @@
+from bot.core.data_parser.JSONParser.parser import JSONParser

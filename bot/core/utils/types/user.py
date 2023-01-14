@@ -1,6 +1,6 @@
-from shedule import GroupShedule
+from .shedule import GroupShedule
 
-from userinfo import UserInfo
+from .userinfo import UserInfo
 
 
 class User:
