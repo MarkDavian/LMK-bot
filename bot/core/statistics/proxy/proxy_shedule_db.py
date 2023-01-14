@@ -12,7 +12,7 @@ class CollectorProxy_SheduleDB:
 
     def get_shedule(self, userInfo: UserInfo) -> WeekShedule:
         metrics.collect('Get shedule', userInfo.place, userInfo.group, userInfo.id, userInfo.social)
-        return self.db.get_shedule(userInfo)
+        return self.db.get_week_shedule(userInfo)
 
     def save_group_shedule(self, shedule: GroupShedule) -> None:
         self.db.save_group_shedule(shedule)
