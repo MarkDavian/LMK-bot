@@ -22,7 +22,7 @@
     },
     
     "site-scanner": {
-        "time-interval": "10 min"
+        "time-interval": "10 m"
     }
 
 }
