@@ -19,5 +19,10 @@
             "Mongo",
             "Text"
         ]  
-    }   
+    },
+    
+    "site-scanner": {
+        "time-interval": "10 min"
+    }
+
 }

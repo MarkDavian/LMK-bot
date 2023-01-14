@@ -23,6 +23,8 @@ class Settings(BaseSettings):
     metrics = settings_json['metrics']
     metrics_filepath = metrics['filepath']
 
+    scanner = settings_json['site-scanner']
+
 
     class Config:
         env_file = '.env'
