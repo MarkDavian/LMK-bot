@@ -35,7 +35,7 @@ class SiteParser:
         """Find exactly 
         """
         soup = BeautifulSoup(self.html, features="html5lib")
-        self.file_url = soup.find(
+        file = soup.find(
             'div', {'class': 'right-column'}
         ).find(
             'div', {'class': 'page-tmpl-content'}
@@ -44,3 +44,5 @@ class SiteParser:
         )[1].find(
             'a'
         ).get('href')
+        
+        self.file_url = 'http://www.lmk-lipetsk.ru/000/'+file
