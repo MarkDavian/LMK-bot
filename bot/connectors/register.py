@@ -1,16 +1,8 @@
-from bot.connectors.telegram import *
+from bot.connectors.telegram.registry import start_tg
 from bot.connectors.vk import *
-
-
-def register_connectors():
-    """Registry all connectors bots handlers
-    """
-
-    ...
 
 
 async def start_connectors():
     """Start polling bots
     """
-
-    ...
+    await start_tg()
