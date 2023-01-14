@@ -1,10 +1,18 @@
+import datetime
 import pymongo
 # from motor.motor_asyncio import AsyncIOMotorClient
 
 from config import settings
 
-from bot.core.utils.types.user import UserInfo
-from bot.core.utils.types.shedule import GroupShedule, WeekShedule, WeekSheduleFactory
+from bot.core.utils.types.userinfo import UserInfo
+from bot.core.utils.types.shedule import (
+    GroupShedule, 
+    WeekShedule, 
+    WeekSheduleFactory, 
+    DayShedule, 
+    DaySheduleFactory,
+    SHEDULE_DAY
+)
 
 
 class SheduleDB:
@@ -15,23 +23,83 @@ class SheduleDB:
         )
 
         self._database = client['main']
-        self._collection = self._database['shedule']
 
-    def get_shedule(self, userInfo: UserInfo) -> WeekShedule:
+        self._main_shedule = self._database['shedule']
+        self._change_shedule = self._database['change_shedule']
+        self._combined_shedule = self._database['combined_shedule']
+
+    def get_week_shedule(self, userInfo: UserInfo) -> WeekShedule:
         user_group = userInfo.group
         user_place = userInfo.place
 
-        doc = self._collection.find_one(
+        doc = self._main_shedule.find_one(
             {
-                'Группа': user_group,
-                'Место': user_place
+                'Место': user_place,
+                'Группа': user_group
             }
         )
-        weekShedule = WeekSheduleFactory(doc).get_week_shedule()
+        shedule_dict = doc['Расписание']
+        weekShedule = WeekSheduleFactory(shedule_dict).get()
 
         return weekShedule
 
-    def save_group_shedule(self, shedule: GroupShedule) -> None:
-        r = self._collection.insert_one(
-            shedule.dict()
+    def get_day_shedule(self, day: str, userInfo: UserInfo) -> WeekShedule:
+        doc = self._main_shedule.find_one(
+            {
+                'Место': userInfo.place,
+                'Группа': userInfo.group,
+            }
+        )
+        shedule_dict = {
+            day: doc['Расписание'][day]
+        }
+        dayShedule = DaySheduleFactory(shedule_dict).get()
+
+        return dayShedule
+
+    # TODO Changing places
+    def get_change_shedule(self, userInfo: UserInfo) -> DayShedule:
+        date = datetime.date(date.year, date.month, date.day+1)
+        date_str = date.strftime('%Y-%m-%d')
+
+        doc = self._change_shedule.find_one(
+            {
+                "Дата": date_str
+
+            }
+        )
+        shedule = doc["Курс"][userInfo.course][userInfo.group]
+
+        day = SHEDULE_DAY.WEEKDAYS[date.weekday()]
+        shedule = {
+            day: shedule
+        }
+
+        dayShedule = DaySheduleFactory(shedule).get()
+
+        return dayShedule
+
+    def get_combined_shedule(self, userInfo: UserInfo) -> DayShedule:
+        ...
+
+    def save_group_shedule(self, groupShedule: GroupShedule) -> None:
+        r = self._main_shedule.insert_one(
+            {
+                "Место": groupShedule.place,
+                "Группа": groupShedule.group,
+                "Курс": groupShedule.course,
+                "Расписание": groupShedule.shedule
+            }
+        )
+
+    def save_change_shedule(self, change: DayShedule):
+        date = datetime.date.today()
+        date = datetime.date(date.year, date.month, date.day+1)
+        date = date.strftime('%Y-%m-%d')
+        r = self._change_shedule.insert_one(
+            {
+                "Место": "ЛМК",
+                "Дата": date,
+                **change.dict()
+            }
         )
