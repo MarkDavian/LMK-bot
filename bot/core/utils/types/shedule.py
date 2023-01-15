@@ -85,7 +85,8 @@ class DayShedule(IShedule):
         self._subjects = subjects
 
         keys = [i for i in range(1, 1+len(self._subjects))]
-        self.shedule = dict(zip(keys, self._subjects))
+        subs = [sub.__dict__() for sub in self._subjects]
+        self.shedule = dict(zip(keys, subs))
 
     @property
     def name(self) -> str:
@@ -160,6 +161,7 @@ class GroupShedule(IShedule):
     def __init__(self, userInfo: UserInfo, shedule: WeekShedule) -> None:
         self.group = userInfo.group
         self.place = userInfo.place
+        self.course = userInfo.course
         self.shedule = shedule
 
     def get_shedule_for(self, day: SHEDULE_DAY) -> DayShedule:
