@@ -83,7 +83,7 @@ class CSVParser:
             json.dump(self.schema, file, ensure_ascii=False, indent=4, sort_keys=True)
 
     def _update_schema(self):
-        self.schema['course'].update({
+        self.schema['Курс'].update({
                 self.current_curse: self.global_curse_groups
             })
 
