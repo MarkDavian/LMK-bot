@@ -6,12 +6,27 @@ from bot.core.scanner.site_parser import SiteParser
 
 class Scanner:
     def __init__(self) -> None:
+        self.result = ''
+        self.check_result = ''
         self.interval = self._validate_interval(settings.scanner['time-interval'])
+        self.url = 'http://www.lmk-lipetsk.ru/main_razdel/shedule/index.php'
 
     def get_file_url(self):
         self._process_site()
 
         return self.result
+
+    def process(self):
+        self._process_site()
+
+    def parse_site(self):
+        r = requests.get(self.url)
+        html = r.text
+
+        parser = SiteParser()
+        parser.parse(html)
+
+        self.result = parser.file_url
 
     def _process_site(self):
         r = requests.get(self.url)
@@ -22,19 +37,10 @@ class Scanner:
 
         self.check_result = parser.file_url
         if self.check_result != self.result:
+            self.same_url = False
             self.result = self.check_result
-            return False
-
-        return True
-
-    def parse_site(self):
-        r = requests.get(self.url)
-        html = r.text
-
-        parser = SiteParser()
-        parser.parse(html)
-
-        self.result = parser.file_url
+        else:
+            self.same_url = True
 
     # TODO Create validation
     def _validate_interval(self, string: str):
