@@ -20,8 +20,23 @@ class UsersDB:
 
     def create_user(self, userInfo: UserInfo):
         r = self._users.insert_one(
-            **userInfo.dict()
+            userInfo.dict()
         )
+
+    def get_user_info(self, user_id: int) -> UserInfo:
+        r = self._users.find_one(
+            {
+                'userID': user_id
+            }
+        )
+        userInfo = UserInfo(
+            userID=r['userID'],
+            social=r['social'],
+            course=r['course'],
+            group=r['group'],
+            place=r['place']
+        )
+        return userInfo
 
 
 usersDB = UsersDB()
