@@ -100,7 +100,11 @@ class DayShedule(IShedule):
         return self.shedule
 
     def __repr__(self) -> str:
-        return self.dict().__str__()
+        re = ''
+        for c, subject in enumerate(self._subjects):
+            c += 1
+            re += f'{c}. {subject.name} ({subject.time[0]}-{subject.time[1]})\n'
+        return re
 
 
 class WeekShedule(IShedule):
@@ -114,6 +118,7 @@ class WeekShedule(IShedule):
         shedule = [day_shed.dict() for day_shed in days_shedule]
 
         self.week_shedule = dict(zip(days, shedule))
+        self._shedule = days_shedule
 
     # @override
     def dict(self) -> dict:
@@ -130,6 +135,12 @@ class WeekShedule(IShedule):
                     con[day] = shedule
                     break
         return con
+
+    def __repr__(self) -> str:
+        re = ''
+        for shedule in self._shedule:
+            re += f'{shedule.name}:\n{shedule}\n\n'
+        return re
 
 
 class GroupShedule(IShedule):
