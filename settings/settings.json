@@ -8,8 +8,8 @@
         "filepath": "database/metrics/metrics",
         "fields": [
             "Place",
-            "Group",
             "Course",
+            "Group",
             "UserId",
             "Social"    
         ],
