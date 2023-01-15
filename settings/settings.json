@@ -9,6 +9,7 @@
         "fields": [
             "Place",
             "Group",
+            "Course",
             "UserId",
             "Social"    
         ],
