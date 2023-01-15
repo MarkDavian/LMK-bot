@@ -4,10 +4,13 @@ from bot.connectors.telegram.handlers.commands.shedule import register_shedule_c
 
 
 async def register_all(dp: Dispatcher):
-    # await dp.bot.set_my_commands(
-    #     [
-    #         types.BotCommand(""),
-    #     ]
-    # )
+    await dp.bot.set_my_commands(
+        [
+            types.BotCommand("today", 'Расписание на сегодня'),
+            types.BotCommand("tomorrow", 'Расписание на завтра'),
+            types.BotCommand("changes", 'Расписание замен на завтра'),
+            types.BotCommand("week", 'Расписание на неделю'),
+        ]
+    )
     register_common_cmd(dp)
     register_shedule_cmd(dp)
