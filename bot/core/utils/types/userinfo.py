@@ -10,17 +10,16 @@ class UserInfo:
     place: str
     social: str
 
-    def __init__(self, 
-                id: int, 
-                social: str, 
-                course: int, 
-                group: str, 
-                place: str) -> None:
+    def __init__(self, id: int, social: str, 
+                course: int, group: str, place: str) -> None:
         self.id = id
         self.course = course
         self.group = group
         self.place = place
         self.social = social
 
-    def list(self):
-        return [self.place, self.group, self.id, self.social]
+    def dict(self) -> dict:
+        return vars(self)
+
+    def list(self) -> list:
+        return [self.place, self.course, self.group, self.id, self.social]
