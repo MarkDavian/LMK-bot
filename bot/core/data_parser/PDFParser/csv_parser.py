@@ -13,12 +13,12 @@ class CSVParser:
             dataframe (Optional[pd.DataFrame], optional): Data frame to process. Defaults to None.
             csv_filepath (Optional[str], optional): CSV file path to process. Defaults to None.
         """
-        if dataframe:
+        if dataframe is not None:
             self.df = dataframe
         else:
             self.df = pd.read_csv(csv_filepath)
 
-        self.schema = {"course": {}}
+        self.schema = {"Курс": {}}
 
         self.current_curse = 1
         self.current_group = {}
