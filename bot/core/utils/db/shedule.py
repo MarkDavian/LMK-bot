@@ -70,7 +70,7 @@ class SheduleDB:
         )
         shedule = doc["Курс"][userInfo.course][userInfo.group]
 
-        day = SHEDULE_DAY.WEEKDAYS[date.weekday()]
+        day = SHEDULE_DAY.WEEKDAYS[date.weekday()+1]
         shedule = {
             day: shedule
         }
@@ -92,14 +92,15 @@ class SheduleDB:
             }
         )
 
-    def save_change_shedule(self, change: DayShedule):
+    def save_change_shedule(self, change: dict):
         date = datetime.date.today()
         date = datetime.date(date.year, date.month, date.day+1)
         date = date.strftime('%Y-%m-%d')
+        
         r = self._change_shedule.insert_one(
             {
                 "Место": "ЛМК",
                 "Дата": date,
-                **change.dict()
+                **change
             }
         )
