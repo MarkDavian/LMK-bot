@@ -43,7 +43,7 @@ class SheduleDB:
 
         return weekShedule
 
-    def get_day_shedule(self, day: str, userInfo: UserInfo) -> WeekShedule:
+    def get_day_shedule(self, day: str, userInfo: UserInfo) -> DayShedule:
         doc = self._main_shedule.find_one(
             {
                 'Место': userInfo.place,
