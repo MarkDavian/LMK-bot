@@ -4,15 +4,15 @@ class UserInfo:
     _group: User group in school,
     _from: Place that is user from.
     """
-    id: int
+    userID: int
     course: int
     group: str
     place: str
     social: str
 
-    def __init__(self, id: int, social: str, 
+    def __init__(self, userID: int, social: str, 
                 course: int, group: str, place: str) -> None:
-        self.id = id
+        self.userID = userID
         self.course = course
         self.group = group
         self.place = place
@@ -22,4 +22,4 @@ class UserInfo:
         return vars(self)
 
     def list(self) -> list:
-        return [self.place, self.course, self.group, self.id, self.social]
+        return [self.place, self.course, self.group, self.userID, self.social]
