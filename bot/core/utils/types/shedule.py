@@ -30,7 +30,7 @@ class SHEDULE_TIME:
     six = ('17:40', '19:10')
     seven = ('19:20', '20:50')
 
-    SUBJECTS = [one, two, three, hour, four, five, six, seven]
+    SUBJECTS = [one, two, three, four, five, six, seven]
 
 
 class Subject:
