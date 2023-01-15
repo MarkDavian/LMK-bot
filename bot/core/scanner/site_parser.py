@@ -23,13 +23,10 @@ class SiteParser:
     url: str
     file_url: str
 
-    def __init__(self) -> None:
-        self.url = 'http://www.lmk-lipetsk.ru/main_razdel/shedule/index.php'
-
     def parse(self, html_text: str):
         """Find exactly 
         """
-        soup = BeautifulSoup(self.html, features="html5lib")
+        soup = BeautifulSoup(html_text, features="html5lib")
         file = soup.find(
             'div', {'class': 'right-column'}
         ).find(
@@ -40,4 +37,4 @@ class SiteParser:
             'a'
         ).get('href')
         
-        self.file_url = 'http://www.lmk-lipetsk.ru/000/'+file
+        self.file_url = 'http://www.lmk-lipetsk.ru/'+file
