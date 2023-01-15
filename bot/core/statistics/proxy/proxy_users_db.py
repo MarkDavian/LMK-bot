@@ -13,4 +13,5 @@ class CollectorProxy_UsersDB:
         metrics.collect('New user', userInfo.place, userInfo.group, userInfo.id, userInfo.social)
         return self.db.create_user(userInfo)
 
+
 usersDB = CollectorProxy_UsersDB(UsersDB())
