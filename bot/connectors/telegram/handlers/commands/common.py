@@ -36,10 +36,11 @@ async def group_input(message: types.Message, state: FSMContext):
 
 async def course_input(message: types.Message, state: FSMContext):
     course = message.text
-    group = await state.get_data('group')
+    data = await state.get_data()
+    group = data['group']
 
     userInfo = UserInfo(
-        id=message.from_user.id,
+        userID=message.from_user.id,
         social='telegram',
         course=course,
         group=group,
