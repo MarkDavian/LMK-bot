@@ -96,6 +96,19 @@ class SheduleDB:
         date = datetime.date.today()
         date = datetime.date(date.year, date.month, date.day+1)
         date = date.strftime('%Y-%m-%d')
+
+        r = self._change_shedule.find_one(
+            {
+                "Место": "ЛМК",
+                "Дата": date,
+            }
+        )
+        if r is not None:
+            re = self._change_shedule.delete_one(
+                {
+                    "_id": r['_id']
+                }
+            )
         
         r = self._change_shedule.insert_one(
             {
