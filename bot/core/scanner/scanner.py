@@ -9,11 +9,11 @@ class Scanner:
         self.interval = self._validate_interval(settings.scanner['time-interval'])
 
     def get_file_url(self):
-        self._no_changes()
+        self._process_site()
 
         return self.result
 
-    def _no_changes(self):
+    def _process_site(self):
         r = requests.get(self.url)
         html = r.text
 
