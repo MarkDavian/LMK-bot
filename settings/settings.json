@@ -24,6 +24,11 @@
     
     "site-scanner": {
         "time-interval": "10 m"
+    },
+
+    "files": {
+        "path": "files/",
+        "max-count": 10
     }
 
 }
