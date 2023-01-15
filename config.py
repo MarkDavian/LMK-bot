@@ -25,6 +25,8 @@ class Settings(BaseSettings):
 
     scanner = settings_json['site-scanner']
 
+    files = settings_json['files']
+
 
     class Config:
         env_file = '.env'
