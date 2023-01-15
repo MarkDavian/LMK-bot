@@ -1,55 +1,102 @@
+import datetime
 from aiogram import types, Dispatcher
 from aiogram.dispatcher.filters import Text
-from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.dispatcher import FSMContext
 
 from bot.core.utils.types.userinfo import UserInfo
+from bot.core.utils.types.shedule import SHEDULE_DAY
+from bot.core.statistics.proxy.proxy_users_db import usersDB
+from bot.core.statistics.proxy.proxy_shedule_db import sheduleDB
 
 
-class RegistrationSG(StatesGroup):
-    start = State()
-    groupInput = State()
-    courseInput = State()
+def get_userinfo(user_id: int) -> UserInfo:
+    userInfo = usersDB.get_user_info(user_id)
+
+    return userInfo
 
 
-async def cmd_start(message: types.Message, state: FSMContext):
-    await state.finish()
-    await message.answer(
-        ("Я -- бот для расписания)\n"+
-        "Укажи свою группу, например ПИ 19-2"),
-        reply_markup=types.ReplyKeyboardRemove()
-    )
-    await state.set_state(RegistrationSG.groupInput.state)
+async def cmd_get_shedule_today(message: types.Message, state: FSMContext):
+    user_id = message.from_user.id
+    userInfo = get_userinfo(user_id)
 
+    day = datetime.date.today().weekday()
+    today = SHEDULE_DAY.WEEKDAYS[day]
 
-async def group_input(message: types.Message, state: FSMContext):
-    group = message.text
-    await message.answer(
-        "Отлично, теперь укажи свой курс цифрой (1-4)"
-    )
-    await state.update_data(group=group)
-    await state.set_state(RegistrationSG.courseInput.state)
-
-
-async def course_input(message: types.Message, state: FSMContext):
-    course = message.text
-    group = await state.get_data('group')
-
-    userInfo = UserInfo(
-        id=message.from_user.id,
-        social='telegram',
-        course=course,
-        group=group,
-        place='ЛМК'
-    )
+    dayShedule = sheduleDB.get_day_shedule(today, userInfo)
 
     await message.answer(
-        "Успешно зарегистрировал тебя! Теперь ты можешь воспользоваться командами)"
+        (
+            f'Расписание на {today}:\n'+
+            repr(dayShedule)
+        )
     )
 
-    await state.finish()
+
+async def cmd_get_shedule_tomorrow(message: types.Message, state: FSMContext):
+    user_id = message.from_user.id
+    userInfo = get_userinfo(user_id)
+
+    day = datetime.date.today().weekday()
+    today = SHEDULE_DAY.WEEKDAYS[day+1]
+
+    dayShedule = sheduleDB.get_day_shedule(today, userInfo)
+
+    await message.answer(
+        (
+            f'Расписание на {today}:\n'+
+            repr(dayShedule)
+        )
+    )
+
+
+async def cmd_get_change_shedule(message: types.Message, state: FSMContext):
+    user_id = message.from_user.id
+    userInfo = get_userinfo(user_id)
+
+    day = datetime.date.today().weekday()
+    day = SHEDULE_DAY.WEEKDAYS[day+1]
+    dayShedule = sheduleDB.get_change_shedule(userInfo)
+
+    await message.answer(
+        (
+            f'Замены на завтра ({day}):\n'+
+            repr(dayShedule)
+        )
+    )
+
+
+async def get_shedule_day(message: types.Message, state: FSMContext):
+    day = ''
+    user_id = message.from_user.id
+    userInfo = get_userinfo(user_id)
+
+    dayShedule = sheduleDB.get_day_shedule(day, userInfo)
+
+    await message.answer(
+        (
+            f'Расписание на {day}:\n'+
+            repr(dayShedule)
+        )
+    )
+
+
+async def cmd_get_week_shedule(message: types.Message, state: FSMContext):
+    user_id = message.from_user.id
+    userInfo = get_userinfo(user_id)
+
+    weekShedule = sheduleDB.get_week_shedule(userInfo)
+
+    await message.answer(
+        (
+            f'Расписание на неделю:\n'+
+            repr(weekShedule)
+        )
+    )
 
 
 
 def register_shedule_cmd(dp: Dispatcher):
-    ...
+    dp.register_message_handler(cmd_get_shedule_today, commands="today", state="*")
+    dp.register_message_handler(cmd_get_shedule_tomorrow, commands="tomorrow", state="*")
+    dp.register_message_handler(cmd_get_change_shedule, commands="changes", state="*")
+    dp.register_message_handler(cmd_get_week_shedule, commands="week", state="*")
