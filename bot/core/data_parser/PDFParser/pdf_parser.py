@@ -7,6 +7,8 @@ import tabula
 import pandas as pd
 from pydantic import BaseModel, validator
 
+from bot.core.file_resolver.resolver import File
+
 from .csv_parser import CSVParser
 from .beautifer import CSVBeautifer
 
@@ -44,7 +46,7 @@ class PDFParser:
         if self._is_url(filepath):
             filepath = self._download_file(filepath)
 
-        output_csv = 'output.csv'
+        output_csv = File('pdf-csv.csv')
 
         tabula.convert_into(filepath, output_csv, output_format="csv", pages='all')
         self.df = CSVBeautifer(output_csv).beautify()
@@ -77,7 +79,7 @@ class PDFParser:
         return True
 
     def _download_file(self, filepath: str):
-        path = 'file.pdf'
+        path = File('changes.pdf')
         with open(path, 'wb') as file:
             r = requests.get(filepath)
             file.write(r.content)

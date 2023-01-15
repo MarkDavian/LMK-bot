@@ -1,5 +1,6 @@
-
 import pandas as pd
+
+from bot.core.file_resolver.resolver import File
 
 
 class CSVBeautifer:
@@ -7,7 +8,7 @@ class CSVBeautifer:
     """
     def __init__(self, csv_path: str) -> None:
         self.orig_csv = csv_path
-        self.csv = 'right.csv'
+        self.csv = File('beauty.csv')
 
     def beautify(self) -> pd.DataFrame:
         self.df = self._process()
