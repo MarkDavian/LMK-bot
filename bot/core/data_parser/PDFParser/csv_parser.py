@@ -20,7 +20,7 @@ class CSVParser:
 
         self.schema = {"Курс": {}}
 
-        self.current_curse = 1
+        self.current_curse = '1'
         self.current_group = {}
         self.current_group_change = {}
 
@@ -53,19 +53,19 @@ class CSVParser:
         self.global_curse_groups = {}
 
     def _clear_current(self):
-        self.current_group ={}
+        self.current_group = {}
         self.current_group_change = {}
 
     def _process_fields(self, group_field, sub_num, change, course, group):
         if course:
             self._clear()
             self._clear_current()
-            self.current_curse = int(group_field[0])
+            self.current_curse = str(int(group_field[0]))
         else:
             if group:
                 self._clear_current()
                 self.current_group_name = group_field    
-            self._update_current_group(int(sub_num), change)
+            self._update_current_group(str(int(sub_num)), change)
 
 
     def _check_fields(self, row):
