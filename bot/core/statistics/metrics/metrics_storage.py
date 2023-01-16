@@ -35,8 +35,9 @@ class CSVMetricsStorage(IMetricsStorage):
 
         metrics = settings.metrics['fields']
         self.heads = [
-            'Date', 'Time', 'Metric' *metrics
+            'Date', 'Time', 'Metric'
         ]
+        self.heads += metrics
 
         self._accurate_csv_file()
 
@@ -52,7 +53,10 @@ class CSVMetricsStorage(IMetricsStorage):
         
     def _create_file(self):
         try:
-            open(self.filepath, 'w').close()
+            pd.DataFrame([], columns=self.heads).to_csv(self.filepath, header=True)
+            print(
+                f'CSV file in path ({self.filepath}) created'
+            )
         except Exception:
             raise _StorageFileError(f'Not able to create csv file ({self.filepath})')
 
