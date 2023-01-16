@@ -24,6 +24,7 @@ async def cmd_get_shedule_today(message: types.Message, state: FSMContext):
 
     dayShedule = sheduleDB.get_day_shedule(today, userInfo)
 
+
     await message.answer(
         (
             f'Расписание на {today}:\n'+
@@ -57,11 +58,14 @@ async def cmd_get_change_shedule(message: types.Message, state: FSMContext):
     day = SHEDULE_DAY.WEEKDAYS[day+1]
     dayShedule = sheduleDB.get_change_shedule(userInfo)
 
-    await message.answer(
-        (
-            f'Замены на завтра ({day}):\n'+
-            repr(dayShedule)
+    text = 'Замен на завтра нет'
+    if dayShedule is not None:
+        text = (f'Замены на завтра ({day}):\n'+
+                repr(dayShedule)
         )
+
+    await message.answer(
+        text
     )
 
 
