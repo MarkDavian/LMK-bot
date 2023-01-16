@@ -15,22 +15,22 @@ class CollectorProxy_SheduleDB:
         return self.db.get_week_shedule(userInfo)
 
     def save_group_shedule(self, shedule: GroupShedule) -> None:
-        self.db.save_group_shedule(shedule)
+        return self.db.save_group_shedule(shedule)
 
     def get_day_shedule(self, day: str, userInfo: UserInfo) -> DayShedule:
         metrics.collect('Get day shedule', *userInfo.list())
-        self.db.get_day_shedule(day, userInfo)
+        return self.db.get_day_shedule(day, userInfo)
 
     def get_change_shedule(self, userInfo: UserInfo) -> DayShedule:
         metrics.collect('Get change shedule', *userInfo.list())
-        self.db.get_change_shedule(userInfo)
+        return self.db.get_change_shedule(userInfo)
     
     def get_combined_shedule(self, userInfo: UserInfo) -> DayShedule:
         metrics.collect('Get combined shedule', *userInfo.list())
-        self.db.get_combined_shedule(userInfo)
+        return self.db.get_combined_shedule(userInfo)
 
     def save_change_shedule(self, change: DayShedule):
-        self.db.save_change_shedule(change)
+        return self.db.save_change_shedule(change)
 
 
 sheduleDB = CollectorProxy_SheduleDB(SheduleDB())
