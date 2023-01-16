@@ -10,8 +10,10 @@ class CollectorProxy_UsersDB:
         self.db = db
 
     def create_user(self, userInfo: UserInfo):
-        metrics.collect('New user', userInfo.place, userInfo.group, userInfo.id, userInfo.social)
+        metrics.collect('New user', *userInfo.list())
         return self.db.create_user(userInfo)
 
+    def get_user_info(self, user_id: int):
+        return self.db.get_user_info(user_id)
 
 usersDB = CollectorProxy_UsersDB(UsersDB())
