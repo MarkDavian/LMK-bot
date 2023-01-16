@@ -1,6 +1,16 @@
+import logging
 from typing import Optional
+
 from bot.core.data_parser.PDFParser import PDFParser
 from bot.core.utils.types.shedule import SHEDULE_TIME
+
+
+json_parser_logger = logging.getLogger(__name__)
+json_parser_logger.setLevel(logging.INFO)
+handler = logging.FileHandler(f"DataMaster.log", mode='w')
+formatter = logging.Formatter("%(name)s %(asctime)s %(levelname)s %(message)s")
+handler.setFormatter(formatter)
+json_parser_logger.addHandler(handler)
 
 
 class JSONParser:
@@ -15,6 +25,7 @@ class JSONParser:
         return self.pdf_parser.extract_dict()
 
     def parse(self):
+        json_parser_logger.info('Start parsing doc')
         doc = self._get_dict()
 
         for course, shedule in doc['Курс'].items():
@@ -25,4 +36,5 @@ class JSONParser:
                         'Пара': subject,
                         'Время': time
                     }
+        json_parser_logger.info('Doc parsed')
         return doc

@@ -1,7 +1,17 @@
-import glob
 import os
+import glob
+import logging
+
 
 from config import settings
+
+
+resolver_logger = logging.getLogger(__name__)
+resolver_logger.setLevel(logging.INFO)
+handler = logging.FileHandler(f"DataMaster.log", mode='w')
+formatter = logging.Formatter("%(name)s %(asctime)s %(levelname)s %(message)s")
+handler.setFormatter(formatter)
+resolver_logger.addHandler(handler)
 
 
 PATH = settings.files['path']
@@ -20,6 +30,7 @@ class FileNameResolver:
         self.fileResolver = FileResolver()
 
     def resolve(self):
+        resolver_logger.info(f'Resolving filename {self.filename}')
         name, ext = self.filename.split('.')
 
         if os.path.exists(PATH+self.filename):

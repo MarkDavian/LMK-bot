@@ -1,4 +1,6 @@
 import requests
+import logging
+
 from bs4 import BeautifulSoup
 
 # from bot.core.utils.types.shedule import SHEDULE_DAY
@@ -16,6 +18,13 @@ from bs4 import BeautifulSoup
 #     print(change)
 
 
+site_parser_logger = logging.getLogger(__name__)
+site_parser_logger.setLevel(logging.INFO)
+handler = logging.FileHandler(f"DataMaster.log", mode='w')
+formatter = logging.Formatter("%(name)s %(asctime)s %(levelname)s %(message)s")
+handler.setFormatter(formatter)
+site_parser_logger.addHandler(handler)
+
 
 class SiteParser:
     """Scans HTML for <a> tag href with file url
@@ -26,6 +35,7 @@ class SiteParser:
     def parse(self, html_text: str):
         """Find exactly 
         """
+        site_parser_logger.info('Getting started to parse html')
         soup = BeautifulSoup(html_text, features="html5lib")
         file = soup.find(
             'div', {'class': 'right-column'}
@@ -38,3 +48,5 @@ class SiteParser:
         ).get('href')
         
         self.file_url = 'http://www.lmk-lipetsk.ru/'+file
+        
+        site_parser_logger.info('html parsed')

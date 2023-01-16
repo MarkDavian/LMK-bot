@@ -1,11 +1,21 @@
 import datetime
 import os.path
+import logging
+
 from overrides import override
 
 import pandas as pd
 
 from config import settings
 from bot.core.statistics.metrics.errors import _StorageTypeError, _StorageFileError
+
+
+metrics_storage_logger = logging.getLogger(__name__)
+metrics_storage_logger.setLevel(logging.INFO)
+handler = logging.FileHandler(f"DataMaster.log", mode='w')
+formatter = logging.Formatter("%(name)s %(asctime)s %(levelname)s %(message)s")
+handler.setFormatter(formatter)
+metrics_storage_logger.addHandler(handler)
 
 
 class IMetricsStorage:
@@ -33,6 +43,7 @@ class CSVMetricsStorage(IMetricsStorage):
         """
         self._init_filepath()
 
+        metrics_storage_logger.info('Getting metrics fiedls from settings')
         metrics = settings.metrics['fields']
         self.heads = [
             'Date', 'Time', 'Metric'
@@ -42,9 +53,11 @@ class CSVMetricsStorage(IMetricsStorage):
         self._accurate_csv_file()
 
     def _init_filepath(self) -> None:
+        metrics_storage_logger.info('Getting filepath')
         self.filepath = settings.metrics_filepath+'.csv'
 
     def _accurate_csv_file(self) -> None:
+        metrics_storage_logger.info('Checking csv path file exist')
         if not os.path.isfile(self.filepath):
             print(
                 f'No CSV file found in path ({self.filepath}). Trying to create file'
@@ -53,14 +66,17 @@ class CSVMetricsStorage(IMetricsStorage):
         
     def _create_file(self):
         try:
+            metrics_storage_logger.info('Creating file')
             pd.DataFrame([], columns=self.heads).to_csv(self.filepath, header=True)
             print(
                 f'CSV file in path ({self.filepath}) created'
             )
         except Exception:
+            metrics_storage_logger.error('File was not created', exc_info=True)
             raise _StorageFileError(f'Not able to create csv file ({self.filepath})')
 
     def _save_df(self, df: pd.DataFrame) -> None:
+        metrics_storage_logger.info('Saving DataFrame to CSV')
         df.to_csv(self.filepath, mode='a', header=False)
 
     @override
@@ -70,6 +86,7 @@ class CSVMetricsStorage(IMetricsStorage):
         data = [
             [date, time, metric_name, *args]
         ]
+        metrics_storage_logger.info(f'Got metrics {data}')
 
         df = pd.DataFrame(data, columns=self.heads)
         self._save_df(df)
@@ -102,8 +119,11 @@ class MetricsStorageFactory:
         
         match storage_type:
             case 'CSV':
+                metrics_storage_logger.info('Initiate CSV storage')
                 return CSVMetricsStorage()
             case 'Mongo':
+                metrics_storage_logger.info('Initiate Mongo storage')
                 return MongoMetricsStorage()
             case "Text":
+                metrics_storage_logger.info('Initiate Text storage')
                 return TextMetricsStorage()

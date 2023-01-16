@@ -1,5 +1,7 @@
-from typing import Any
+import logging
 import requests
+
+from typing import Any
 from urllib.parse import urlparse
 from pathlib import Path
 
@@ -11,6 +13,14 @@ from bot.core.file_resolver.resolver import File
 
 from .csv_parser import CSVParser
 from .beautifer import CSVBeautifer
+
+
+pdf_parser_logger = logging.getLogger(__name__)
+pdf_parser_logger.setLevel(logging.INFO)
+handler = logging.FileHandler(f"DataMaster.log", mode='w')
+formatter = logging.Formatter("%(name)s %(asctime)s %(levelname)s %(message)s")
+handler.setFormatter(formatter)
+pdf_parser_logger.addHandler(handler)
 
 
 class FileSrc(BaseModel):
@@ -41,17 +51,23 @@ class PDFParser:
         Args:
             src (str): Path to PDF file or URL to file
         """
+        pdf_parser_logger.info('Starting PDF parser')
         src = FileSrc(path=src)
         filepath = src.path
         if self._is_url(filepath):
             filepath = self._download_file(filepath)
 
         output_csv = File('pdf-csv.csv')
-
+        pdf_parser_logger.info('Start converting PDF to CSV')
+        
         tabula.convert_into(filepath, output_csv, output_format="csv", pages='all')
+        pdf_parser_logger.info('PDF converted')
+
         self.df = CSVBeautifer(output_csv).beautify()
+        pdf_parser_logger.info('DataFrame is recieved')
 
         self.parser = CSVParser(dataframe=self.df)
+        pdf_parser_logger.info('Start processing DataFrame')
         self.parser.process()
 
     def extract_csv(self, output: str) -> str:
@@ -79,8 +95,14 @@ class PDFParser:
         return True
 
     def _download_file(self, filepath: str):
+        pdf_parser_logger.info(f'Downloading PDF file from {filepath}')
+
         path = File('changes.pdf')
+
         with open(path, 'wb') as file:
             r = requests.get(filepath)
             file.write(r.content)
+
+        pdf_parser_logger.info(f'File {path} downloaded')
+
         return path

@@ -1,6 +1,17 @@
-from typing import Optional
-import pandas as pd
+import logging
 import json
+
+from typing import Optional
+
+import pandas as pd
+
+
+csv_parser_logger = logging.getLogger(__name__)
+csv_parser_logger.setLevel(logging.INFO)
+handler = logging.FileHandler(f"DataMaster.log", mode='w')
+formatter = logging.Formatter("%(name)s %(asctime)s %(levelname)s %(message)s")
+handler.setFormatter(formatter)
+csv_parser_logger.addHandler(handler)
 
 
 class CSVParser:
@@ -13,6 +24,7 @@ class CSVParser:
             dataframe (Optional[pd.DataFrame], optional): Data frame to process. Defaults to None.
             csv_filepath (Optional[str], optional): CSV file path to process. Defaults to None.
         """
+        csv_parser_logger.info('Reading DataFrame')
         if dataframe is not None:
             self.df = dataframe
         else:
@@ -27,9 +39,12 @@ class CSVParser:
         self.current_group_name = ''
         self.global_curse_groups = {}
 
+        csv_parser_logger.info('Ready to start parse')
+
     def process(self):
         """Dictionary extraction from Data frame
         """
+        csv_parser_logger.info('Starting parse')
         for row in zip(self.df['Группа'], self.df['Пара'], self.df['Провести']):
             group_field = row[0]
             sub_num = row[1]
@@ -40,6 +55,8 @@ class CSVParser:
 
             self._update_global_curse_groups()
             self._update_schema()
+
+        csv_parser_logger.info('Parse done')
 
     def json(self, output: str):
         self._convert_to_json(output)
@@ -83,6 +100,7 @@ class CSVParser:
             json.dump(self.schema, file, ensure_ascii=False, indent=4, sort_keys=True)
 
     def _update_schema(self):
+        csv_parser_logger.info('Field processed')
         self.schema['Курс'].update({
                 self.current_curse: self.global_curse_groups
             })

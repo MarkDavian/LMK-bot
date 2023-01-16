@@ -1,14 +1,25 @@
 import requests
+import logging
 
 from config import settings
 from bot.core.scanner.site_parser import SiteParser
 
 
+scanner_logger = logging.getLogger(__name__)
+scanner_logger.setLevel(logging.INFO)
+handler = logging.FileHandler(f"DataMaster.log", mode='w')
+formatter = logging.Formatter("%(name)s %(asctime)s %(levelname)s %(message)s")
+handler.setFormatter(formatter)
+scanner_logger.addHandler(handler)
+
+
 class Scanner:
     def __init__(self) -> None:
+        scanner_logger.info('Init Scanner. Reading time interval from settings')
         self.result = ''
         self.check_result = ''
         self.interval = self._validate_interval(settings.scanner['time-interval'])
+        scanner_logger.info('Done')
         self.url = 'http://www.lmk-lipetsk.ru/main_razdel/shedule/index.php'
 
     def get_file_url(self):
@@ -29,11 +40,15 @@ class Scanner:
         self.result = parser.file_url
 
     def _process_site(self):
+        scanner_logger.info('Start processing site. Getting html')
         r = requests.get(self.url)
         html = r.text
 
+        scanner_logger.info('Start parsing html')
         parser = SiteParser()
         parser.parse(html)
+
+        scanner_logger.info('Done')
 
         self.check_result = parser.file_url
         if self.check_result != self.result:
