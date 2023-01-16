@@ -29,13 +29,10 @@ class SheduleDB:
         self._combined_shedule = self._database['combined_shedule']
 
     def get_week_shedule(self, userInfo: UserInfo) -> WeekShedule:
-        user_group = userInfo.group
-        user_place = userInfo.place
-
         doc = self._main_shedule.find_one(
             {
-                'Место': user_place,
-                'Группа': user_group
+                'Место': userInfo.place,
+                'Группа': userInfo.group
             }
         )
         shedule_dict = doc['Расписание']
@@ -59,6 +56,7 @@ class SheduleDB:
 
     # TODO Changing places
     def get_change_shedule(self, userInfo: UserInfo) -> DayShedule:
+        date = datetime.date.today()
         date = datetime.date(date.year, date.month, date.day+1)
         date_str = date.strftime('%Y-%m-%d')
 
@@ -68,7 +66,10 @@ class SheduleDB:
 
             }
         )
-        shedule = doc["Курс"][userInfo.course][userInfo.group]
+
+        shedule = doc["Курс"][str(userInfo.course)].get(userInfo.group)
+        if shedule is None:
+            return None
 
         day = SHEDULE_DAY.WEEKDAYS[date.weekday()+1]
         shedule = {
@@ -88,7 +89,7 @@ class SheduleDB:
                 "Место": groupShedule.place,
                 "Группа": groupShedule.group,
                 "Курс": groupShedule.course,
-                "Расписание": groupShedule.shedule
+                "Расписание": groupShedule.shedule.dict()
             }
         )
 
