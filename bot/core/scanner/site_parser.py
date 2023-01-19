@@ -1,21 +1,7 @@
 import datetime
 import logging
 
-from bs4 import BeautifulSoup
-
-# from bot.core.utils.types.shedule import SHEDULE_DAY
-
-# SITE = 'http://www.lmk-lipetsk.ru/'
-# CHANGE = '000/'
-
-# def create_change_file_url():
-#     date = datetime.date.today()
-#     day = date.day
-#     day_name = SHEDULE_DAY.MONTHS[date.month-1][:-1].lower() + 'я'
-
-#     change = CHANGE+f'{day}%20{day_name}.pdf'
-
-#     print(change)
+from bs4 import BeautifulSoup, Tag
 
 
 site_parser_logger = logging.getLogger(__name__)
@@ -38,37 +24,52 @@ class SiteParser:
         """
         site_parser_logger.info('Getting started to parse html')
         soup = BeautifulSoup(html_text, features="html5lib")
-        file = soup.find(
-            'div', {'class': 'right-column'}
-        ).find(
-            'div', {'class': 'page-tmpl-content'}
-        ).find_all(
-            'h2'
-        )[0].find(
+
+        tags = self._find_all_h2_tags(soup)
+        h2 = self._find_h2(tags)
+
+        file = h2.find(
             'a'
         ).get('href')
         
         self.file_url = 'http://www.lmk-lipetsk.ru/'+file
-        self.date = self.find_date(soup)
+        self.date = self.find_date(h2)
         
         site_parser_logger.info('html parsed')
 
-    def find_date(self, soup: BeautifulSoup) -> str:
-        date = soup.find(
+    def find_date(self, h2: Tag) -> str:
+        text = h2.find(
+            'a'
+        ).find(
+            'span'
+        ).text
+
+        date_text = text.split()[-1]
+        date_slices = date_text.split('.')
+        date = [int(slice) for slice in date_slices]
+        date = datetime.date(date[2], date[1], date[0]).strftime('%Y-%m-%d')
+
+        return date
+
+    def _find_all_h2_tags(self, soup: BeautifulSoup) -> list:
+        h2_tags = soup.find(
             'div', {'class': 'right-column'}
         ).find(
             'div', {'class': 'page-tmpl-content'}
         ).find_all(
             'h2'
-        )[0].find(
-            'a'
-        ).find(
-            'span'
-        ).text
-        
-        date = date.split()[-1]
-        date = date.split('.')
-        date = [int(d) for d in date]
-        date = datetime.date(date[2], date[1], date[0]).strftime('%Y-%m-%d')
+        )
+        return h2_tags
 
-        return date
+    def _find_h2(self, tags: list) -> str:
+        """Find the needed h2 tag with file url and date
+        """
+        for h2 in tags:
+            a_text: str = h2.find(
+                'a'
+            ).find(
+                'span'
+            ).text
+
+            if 'изменение занятий' in a_text.lower():
+                return h2
