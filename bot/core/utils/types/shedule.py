@@ -15,8 +15,29 @@ class SHEDULE_DAY:
     saturday = 'Суббота'
     sunday = 'Воскресенье'
 
-    WEEKDAYS = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье']
-    MONTHS = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октрябрь', 'Ноябрь', 'Декабрь']
+    WEEKDAYS = [
+        'Понедельник', 
+        'Вторник', 
+        'Среда', 
+        'Четверг',
+        'Пятница',
+        'Суббота',
+        'Воскресенье'
+    ]
+    MONTHS = [
+        'Январь', 
+        'Февраль', 
+        'Март', 
+        'Апрель', 
+        'Май', 
+        'Июнь', 
+        'Июль', 
+        'Август', 
+        'Сентябрь', 
+        'Октрябрь', 
+        'Ноябрь', 
+        'Декабрь'
+    ]
 
 
 @dataclass(frozen=True)
@@ -25,12 +46,18 @@ class SHEDULE_TIME:
     two = ('9:40', '11:10')
     three = ('11:40', '13:10')
     hour = ('13:30', '14:10')
-    four = ('14:20', '15:50')
-    five = ('16:00', '17:30')
-    six = ('17:40', '19:10')
-    seven = ('19:20', '20:50')
+    four = ('13:30', '15:00')
+    five = ('15:10', '16:40')
+    six = ('16:50', '18:20')
+    seven = ('18:30', '20:00')
+
+    wed_four = ('14:20', '15:50')
+    wed_five = ('16:00', '17:30')
+    wed_six = ('17:40', '19:10')
+    wed_seven = ('19:20', '20:50')
 
     SUBJECTS = [one, two, three, four, five, six, seven]
+    WED_SUBJECTS = [one, two, three, wed_four, wed_five, wed_six, wed_seven]
 
 
 class Subject:
@@ -44,7 +71,7 @@ class Subject:
     name: str
     time: tuple[str]
 
-    def __init__(self, name: str, time: Union[tuple[str], str]) -> None:
+    def __init__(self, name: str, time: Union[tuple[str], list[str], str]) -> None:
         self.name = name
         self.time = time
         if isinstance(time, str):
@@ -80,13 +107,21 @@ class DayShedule(IShedule):
     _name: str
     _subjects: list[Subject]
 
-    def __init__(self, day: SHEDULE_DAY, subjects: list[Subject]) -> None:
+    def __init__(self, 
+            day: SHEDULE_DAY, 
+            subjects: list[Subject],
+            keys: list[str]) -> None:
+        
         self._name = day
         self._subjects = subjects
+        self.keys = keys
 
-        keys = [i for i in range(1, 1+len(self._subjects))]
+        self._make_dict()
+
+    def _make_dict(self):
         subs = [sub.__dict__() for sub in self._subjects]
-        self.shedule = dict(zip(keys, subs))
+
+        self.shedule = dict(zip(self.keys, subs))
 
     @property
     def name(self) -> str:
@@ -103,8 +138,7 @@ class DayShedule(IShedule):
     def __repr__(self) -> str:
         re = ''
         for c, subject in enumerate(self._subjects):
-            c += 1
-            re += f'{c}. {subject.name} ({subject.time[0]}-{subject.time[1]})\n'
+            re += f'{self.keys[c]}: {subject.name} ({subject.time[0]}-{subject.time[1]})\n'
         return re
 
 
@@ -202,7 +236,7 @@ class DaySheduleFactory(ISheduleFactory):
     def _process_doc(self, document: dict) -> None:
         # {
         #     'Понедельник': {
-        #         1: {
+        #         '1': {
         #             "Пара": "Математика",
         #             "Время": "8:00-9:30"
         #         }
@@ -210,14 +244,16 @@ class DaySheduleFactory(ISheduleFactory):
         #     }
         # }
         day = list(document.keys())[0]
-        subs = list(document.values())[0]
+        subs = document[day]
+        keys = list(document[day].keys())
 
         shedule = DayShedule(
             day=day,
             subjects=[
                 Subject(sub['Пара'], sub['Время']) 
                 for sub in subs.values()
-            ]
+            ],
+            keys=keys
         )
         return shedule
 
@@ -228,30 +264,15 @@ class WeekSheduleFactory(ISheduleFactory):
     def _process_doc(self, document: dict) -> WeekShedule:
         days = []
         for day, shedule in document.items():
+            keys = list(shedule.keys())
             days.append(
                 DayShedule(
                     day=day,
                     subjects=[
                         Subject(sub['Пара'], sub['Время']) 
                         for sub in shedule.values()
-                    ]
+                    ],
+                    keys=keys
                 )
             )
         return WeekShedule(days)
-
-
-class GroupSheduleFactory(ISheduleFactory):
-    """Build GroupShedule from a dict
-    """
-    def _process_doc(self, document: dict) -> GroupShedule:
-        userInfo = UserInfo(
-                group=document['Группа'],
-                place=document['Место']
-        )
-        weekShedule = WeekSheduleFactory(document['Расписание']).get()
-
-        groupShedule = GroupShedule(
-            userInfo=userInfo,
-            shedule=weekShedule
-        )
-        return groupShedule
