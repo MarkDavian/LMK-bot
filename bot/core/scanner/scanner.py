@@ -7,13 +7,16 @@ from bot.core.scanner.site_parser import SiteParser
 
 scanner_logger = logging.getLogger(__name__)
 scanner_logger.setLevel(logging.INFO)
-handler = logging.FileHandler(f"DataMaster.log", mode='w')
+handler = logging.FileHandler(f"logs/Scanner.log", mode='w')
 formatter = logging.Formatter("%(name)s %(asctime)s %(levelname)s %(message)s")
 handler.setFormatter(formatter)
 scanner_logger.addHandler(handler)
 
 
 class Scanner:
+    result: str
+    date: str
+
     def __init__(self) -> None:
         scanner_logger.info('Init Scanner. Reading time interval from settings')
         self.result = ''
@@ -38,6 +41,7 @@ class Scanner:
         parser.parse(html)
 
         self.result = parser.file_url
+        self.date = parser.date
 
     def _process_site(self):
         scanner_logger.info('Start processing site. Getting html')
@@ -47,6 +51,7 @@ class Scanner:
         scanner_logger.info('Start parsing html')
         parser = SiteParser()
         parser.parse(html)
+        self.date = parser.date
 
         scanner_logger.info('Done')
 
