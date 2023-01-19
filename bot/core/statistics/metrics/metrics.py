@@ -1,5 +1,6 @@
 import logging
 
+from prometheus_client import Gauge
 
 from config import settings
 
@@ -9,15 +10,20 @@ from bot.core.statistics.metrics.metrics_storage import (
 )
 
 
+"""Metrics
+Metrics divided into users metrics and software metrics
+"""
+
+
 metrics_logger = logging.getLogger(__name__)
 metrics_logger.setLevel(logging.INFO)
-handler = logging.FileHandler(f"DataMaster.log", mode='w')
+handler = logging.FileHandler(f"logs/Metrics.log", mode='w')
 formatter = logging.Formatter("%(name)s %(asctime)s %(levelname)s %(message)s")
 handler.setFormatter(formatter)
 metrics_logger.addHandler(handler)
 
 
-class Metrics():
+class Metrics:
     def __init__(self) -> None:
         metrics_logger.info('Initiating Metrics. Reading metrics fields')
         self.fields = settings.metrics['fields']
@@ -34,6 +40,8 @@ class Metrics():
         """
         metrics_logger.info('Collect new metrics')
         self.storage.save(metric_name, *args)
+
+    
 
 
 metrics = Metrics()
