@@ -4,8 +4,7 @@ import logging
 
 logging.basicConfig(
     level=logging.INFO, 
-    filename='/logs/all.log',
-    style="%(name)s %(asctime)s %(levelname)s %(message)s"
+    filename='logs/all.log'
 )
 
 from bot.core.data_master.master import start_data_master
