@@ -42,7 +42,7 @@ class DataMaster:
                 time.sleep(self.time_interval)
         except Exception as er:
             master_logger.info('Data master stoped in cause of error')
-            master_logger.error(er)
+            master_logger.error(er, exc_info=True)
 
     def _scan(self):
         master_logger.info('Scanning site')
@@ -51,6 +51,7 @@ class DataMaster:
     def _check(self):
         master_logger.info('Checking file url')
         if self.scanner.same_url:
+            master_logger.info('Same file url')
             pass
         else:
             self._save()
