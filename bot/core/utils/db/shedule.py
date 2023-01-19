@@ -1,6 +1,8 @@
 import datetime
 import logging
 
+from typing import Literal, Union
+
 import pymongo
 # from motor.motor_asyncio import AsyncIOMotorClient
 
@@ -8,7 +10,6 @@ from config import settings
 
 from bot.core.utils.types.userinfo import UserInfo
 from bot.core.utils.types.shedule import (
-    GroupShedule, 
     WeekShedule, 
     WeekSheduleFactory, 
     DayShedule, 
@@ -19,7 +20,7 @@ from bot.core.utils.types.shedule import (
 
 shedule_db_logger = logging.getLogger(__name__)
 shedule_db_logger.setLevel(logging.INFO)
-handler = logging.FileHandler(f"DataMaster.log", mode='w')
+handler = logging.FileHandler(f"logs/SheduleDB.log", mode='w')
 formatter = logging.Formatter("%(name)s %(asctime)s %(levelname)s %(message)s")
 handler.setFormatter(formatter)
 shedule_db_logger.addHandler(handler)
@@ -37,22 +38,55 @@ class SheduleDB:
 
         self._database = client['main']
 
-        self._main_shedule = self._database['shedule']
         self._change_shedule = self._database['change_shedule']
         self._combined_shedule = self._database['combined_shedule']
 
         shedule_db_logger.info('Client is ready')
 
+    def _get_shedule_collection(self, week_type: Literal[0, 1, None] = None):
+        """Get shedule collection by week color
+
+        Args:
+            week_type (Literal[0, 1]): 0 -- White color, 1 -- Green color
+
+        Returns:
+            Collection: Database shedule collection
+        """
+        if week_type is not None:
+            color = week_type
+        else:
+            color = self._get_week_color()
+
+        if color == 0: # white color
+            return self._database['white-shedule']
+        return self._database['green-shedule']
+
+    def _get_week_color(self) -> int:
+        SHEDULE_DATE = datetime.datetime(2023, 1, 2)
+
+        now_date = datetime.datetime.now()
+
+        days = (now_date-SHEDULE_DATE).days
+        days -= days%7
+
+        if days%14==0:
+            # print('белая')
+            return 0
+        else:
+            # print('зеленая')
+            return 1
+
     def get_week_shedule(self, userInfo: UserInfo) -> WeekShedule:
         shedule_db_logger.info('Getting week shedule')
 
-        doc = self._main_shedule.find_one(
+        shedule_collection = self._get_shedule_collection()
+
+        doc = shedule_collection.find_one(
             {
-                'Место': userInfo.place,
-                'Группа': userInfo.group
+                'Место': userInfo.place
             }
         )
-        shedule_dict = doc['Расписание']
+        shedule_dict = doc['Курс'][userInfo.course][userInfo.group]
         weekShedule = WeekSheduleFactory(shedule_dict).get()
 
         return weekShedule
@@ -60,29 +94,28 @@ class SheduleDB:
     def get_day_shedule(self, day: str, userInfo: UserInfo) -> DayShedule:
         shedule_db_logger.info('Getting day shedule')
 
-        doc = self._main_shedule.find_one(
+        shedule_collection = self._get_shedule_collection()
+
+        doc = shedule_collection.find_one(
             {
-                'Место': userInfo.place,
-                'Группа': userInfo.group,
+                'Место': userInfo.place
             }
         )
         shedule_dict = {
-            day: doc['Расписание'][day]
+            day: doc['Курс'][userInfo.course][userInfo.group][day]
         }
         dayShedule = DaySheduleFactory(shedule_dict).get()
 
         return dayShedule
 
-    # TODO Changing places
-    def get_change_shedule(self, userInfo: UserInfo) -> DayShedule:
+    def get_change_shedule(self, date: datetime.date, userInfo: UserInfo) -> DayShedule:
         shedule_db_logger.info('Getting change shedule')
 
-        date = datetime.date.today()
-        date = datetime.date(date.year, date.month, date.day+1)
         date_str = date.strftime('%Y-%m-%d')
 
         doc = self._change_shedule.find_one(
             {
+                "Место": userInfo.place,
                 "Дата": date_str
 
             }
@@ -92,7 +125,7 @@ class SheduleDB:
         if shedule is None:
             return None
 
-        day = SHEDULE_DAY.WEEKDAYS[date.weekday()+1]
+        day = SHEDULE_DAY.WEEKDAYS[date.weekday()]
         shedule = {
             day: shedule
         }
@@ -104,24 +137,23 @@ class SheduleDB:
     def get_combined_shedule(self, userInfo: UserInfo) -> DayShedule:
         shedule_db_logger.info('Getting combined shedule')
 
-    def save_group_shedule(self, groupShedule: GroupShedule) -> None:
+        shedule_collection = self._get_shedule_collection()
+        # TODO
+
+    def save_shedule(self, placeShedule: dict, place: str, weekType: Literal[0, 1]) -> None:
         shedule_db_logger.info('Saving group shedule')
 
-        r = self._main_shedule.insert_one(
+        shedule_collection = self._get_shedule_collection(week_type=weekType)
+
+        r = shedule_collection.insert_one(
             {
-                "Место": groupShedule.place,
-                "Группа": groupShedule.group,
-                "Курс": groupShedule.course,
-                "Расписание": groupShedule.shedule.dict()
+                "Место": place,
+                **placeShedule
             }
         )
 
-    def save_change_shedule(self, change: dict):
+    def save_change_shedule(self, change: dict, date: str):
         shedule_db_logger.info('Saving change shedule')
-
-        date = datetime.date.today()
-        date = datetime.date(date.year, date.month, date.day+1)
-        date = date.strftime('%Y-%m-%d')
 
         r = self._change_shedule.find_one(
             {
