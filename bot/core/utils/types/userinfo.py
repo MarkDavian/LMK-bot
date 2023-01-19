@@ -1,3 +1,6 @@
+from typing import Literal
+
+
 class UserInfo:
     """
     _id: ID in social network,
@@ -5,13 +8,14 @@ class UserInfo:
     _from: Place that is user from.
     """
     userID: int
-    course: int
+    course: Literal['1', '2', '3', '4']
     group: str
     place: str
     social: str
 
     def __init__(self, userID: int, social: str, 
-                course: int, group: str, place: str) -> None:
+                course: Literal['1', '2', '3', '4'], 
+                group: str, place: str) -> None:
         self.userID = userID
         self.course = course
         self.group = group
@@ -22,4 +26,9 @@ class UserInfo:
         return vars(self)
 
     def list(self) -> list:
+        """Only for metrics
+        Listed attributes to store in csv etc.
+        Returns:
+            list
+        """
         return [self.place, self.course, self.group, self.userID, self.social]
