@@ -1,3 +1,6 @@
+import datetime
+from typing import Literal
+
 from bot.core.utils.db.shedule import SheduleDB
 
 from bot.core.utils.types.user import UserInfo
@@ -14,23 +17,23 @@ class CollectorProxy_SheduleDB:
         metrics.collect('Get week shedule', *userInfo.list())
         return self.db.get_week_shedule(userInfo)
 
-    def save_group_shedule(self, shedule: GroupShedule) -> None:
-        return self.db.save_group_shedule(shedule)
+    def save_shedule(self, placeShedule: dict, place: str, weekType: Literal[0, 1]) -> None:
+        return self.db.save_shedule(placeShedule, place, weekType)
 
     def get_day_shedule(self, day: str, userInfo: UserInfo) -> DayShedule:
         metrics.collect('Get day shedule', *userInfo.list())
         return self.db.get_day_shedule(day, userInfo)
 
-    def get_change_shedule(self, userInfo: UserInfo) -> DayShedule:
+    def get_change_shedule(self, date: datetime.date, userInfo: UserInfo) -> DayShedule:
         metrics.collect('Get change shedule', *userInfo.list())
-        return self.db.get_change_shedule(userInfo)
+        return self.db.get_change_shedule(date, userInfo)
     
     def get_combined_shedule(self, userInfo: UserInfo) -> DayShedule:
         metrics.collect('Get combined shedule', *userInfo.list())
         return self.db.get_combined_shedule(userInfo)
 
-    def save_change_shedule(self, change: DayShedule):
-        return self.db.save_change_shedule(change)
+    def save_change_shedule(self, change: dict, date: str):
+        return self.db.save_change_shedule(change, date)
 
 
 sheduleDB = CollectorProxy_SheduleDB(SheduleDB())
