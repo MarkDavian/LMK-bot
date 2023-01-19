@@ -8,7 +8,7 @@ import pandas as pd
 
 csv_parser_logger = logging.getLogger(__name__)
 csv_parser_logger.setLevel(logging.INFO)
-handler = logging.FileHandler(f"DataMaster.log", mode='w')
+handler = logging.FileHandler(f"logs/CSVParser.log", mode='w')
 formatter = logging.Formatter("%(name)s %(asctime)s %(levelname)s %(message)s")
 handler.setFormatter(formatter)
 csv_parser_logger.addHandler(handler)

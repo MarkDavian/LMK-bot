@@ -17,7 +17,7 @@ from .beautifer import CSVBeautifer
 
 pdf_parser_logger = logging.getLogger(__name__)
 pdf_parser_logger.setLevel(logging.INFO)
-handler = logging.FileHandler(f"DataMaster.log", mode='w')
+handler = logging.FileHandler(f"logs/PDFParser.log", mode='w')
 formatter = logging.Formatter("%(name)s %(asctime)s %(levelname)s %(message)s")
 handler.setFormatter(formatter)
 pdf_parser_logger.addHandler(handler)

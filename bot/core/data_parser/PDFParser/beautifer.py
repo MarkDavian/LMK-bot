@@ -6,7 +6,7 @@ from bot.core.file_resolver.resolver import File
 
 beautifer_logger = logging.getLogger(__name__)
 beautifer_logger.setLevel(logging.INFO)
-handler = logging.FileHandler(f"DataMaster.log", mode='w')
+handler = logging.FileHandler(f"logs/CSVBeautifer.log", mode='w')
 formatter = logging.Formatter("%(name)s %(asctime)s %(levelname)s %(message)s")
 handler.setFormatter(formatter)
 beautifer_logger.addHandler(handler)

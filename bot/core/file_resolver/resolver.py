@@ -8,7 +8,7 @@ from config import settings
 
 resolver_logger = logging.getLogger(__name__)
 resolver_logger.setLevel(logging.INFO)
-handler = logging.FileHandler(f"DataMaster.log", mode='w')
+handler = logging.FileHandler(f"logs/FileResolver.log", mode='w')
 formatter = logging.Formatter("%(name)s %(asctime)s %(levelname)s %(message)s")
 handler.setFormatter(formatter)
 resolver_logger.addHandler(handler)

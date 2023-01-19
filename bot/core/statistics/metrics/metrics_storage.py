@@ -12,7 +12,7 @@ from bot.core.statistics.metrics.errors import _StorageTypeError, _StorageFileEr
 
 metrics_storage_logger = logging.getLogger(__name__)
 metrics_storage_logger.setLevel(logging.INFO)
-handler = logging.FileHandler(f"DataMaster.log", mode='w')
+handler = logging.FileHandler(f"logs/MetricsStorage.log", mode='w')
 formatter = logging.Formatter("%(name)s %(asctime)s %(levelname)s %(message)s")
 handler.setFormatter(formatter)
 metrics_storage_logger.addHandler(handler)

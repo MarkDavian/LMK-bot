@@ -7,7 +7,7 @@ from bot.core.utils.types.shedule import SHEDULE_TIME
 
 json_parser_logger = logging.getLogger(__name__)
 json_parser_logger.setLevel(logging.INFO)
-handler = logging.FileHandler(f"DataMaster.log", mode='w')
+handler = logging.FileHandler(f"logs/JSONParser.log", mode='w')
 formatter = logging.Formatter("%(name)s %(asctime)s %(levelname)s %(message)s")
 handler.setFormatter(formatter)
 json_parser_logger.addHandler(handler)
