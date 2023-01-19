@@ -20,7 +20,7 @@ DataOperator will observe for cached files, shedules to pretend over usage.
 
 master_logger = logging.getLogger(__name__)
 master_logger.setLevel(logging.INFO)
-handler = logging.FileHandler(f"DataMaster.log", mode='w')
+handler = logging.FileHandler(f"logs/DataMaster.log", mode='w')
 formatter = logging.Formatter("%(name)s %(asctime)s %(levelname)s %(message)s")
 handler.setFormatter(formatter)
 master_logger.addHandler(handler)
@@ -60,10 +60,11 @@ class DataMaster:
         jsonParser = JSONParser(PDFParser(src=self.scanner.result))
         changeShedule = jsonParser.parse()
 
-        with open(File('changes.json'), 'w') as file:
+        with open(File(f'changes_{self.scanner.date}.json'), 'w') as file:
             json.dump(changeShedule, file, ensure_ascii=False, indent=4, sort_keys=True)
         master_logger.info('JSON saved')
-        self.db.save_change_shedule(change=changeShedule)
+
+        self.db.save_change_shedule(change=changeShedule, date=self.scanner.date)
         master_logger.info('Document mongo saved')
 
 
