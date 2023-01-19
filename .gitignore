@@ -9,3 +9,4 @@ files_example
 output.json
 old_csv.py
 main_shedule
+*.log
