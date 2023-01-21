@@ -1,0 +1,35 @@
+{
+    "timezone": {
+        "name": "MSC",
+        "offset": 3
+    },
+
+    "metrics": {
+        "filepath": "data/metrics/metrics",
+        "fields": [
+            "Place",
+            "Course",
+            "Group",
+            "UserId",
+            "Social"    
+        ],
+        "timing": false,
+        "storage": "CSV",
+        "available-storage-types": [
+            "CSV",
+            "Mongo",
+            "Text"
+        ],
+        "export-port": 9877
+    },
+    
+    "site-scanner": {
+        "time-interval": "10 m"
+    },
+
+    "files": {
+        "path": "files/",
+        "max-count": 10
+    }
+
+}
