@@ -16,4 +16,8 @@ class CollectorProxy_UsersDB:
     def get_user_info(self, user_id: int):
         return self.db.get_user_info(user_id)
 
+    def update_user(self, userInfo: UserInfo):
+        metrics.collect('update_user', *userInfo.list())
+        return self.db.update_user(userInfo)
+
 usersDB = CollectorProxy_UsersDB(UsersDB())
