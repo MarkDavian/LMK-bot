@@ -119,13 +119,12 @@ class MetricsStorageFactory:
         if storage_type not in settings.metrics['available-storage-types']:
             raise _StorageTypeError(f'Storage type ({storage_type}) is not defined')
         
-        match storage_type:
-            case 'CSV':
-                metrics_storage_logger.info('Initiate CSV storage')
-                return CSVMetricsStorage()
-            case 'Mongo':
-                metrics_storage_logger.info('Initiate Mongo storage')
-                return MongoMetricsStorage()
-            case "Text":
-                metrics_storage_logger.info('Initiate Text storage')
-                return TextMetricsStorage()
+        if storage_type == 'CSV':
+            metrics_storage_logger.info('Initiate CSV storage')
+            return CSVMetricsStorage()
+        elif storage_type == 'Mongo':
+            metrics_storage_logger.info('Initiate Mongo storage')
+            return MongoMetricsStorage()
+        elif storage_type == 'Text':
+            metrics_storage_logger.info('Initiate Text storage')
+            return TextMetricsStorage()
