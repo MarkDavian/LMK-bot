@@ -5,10 +5,10 @@ scrape_configs:
 
  - job_name: bot_metrics
    scrape_interval: 30s
-   scrape_timeout:  1m
+   scrape_timeout:  10s
    metrics_path: "/metrics" 
    static_configs: 
-   - targets: ['localhost:9100']
+   - targets: ['studotbot:9100']
 
  - job_name: server_metrics
    scrape_interval: 20s
@@ -18,8 +18,8 @@ scrape_configs:
    - targets: ['host.docker.internal:9100']
 
  - job_name: user_exporter
-   scrape_interval: 1m
-   scrape_timeout:  1m
+   scrape_interval: 30s
+   scrape_timeout:  10s
    metrics_path: "/metrics" 
    static_configs: 
-   - targets: ['localhost:9877']
+   - targets: ['studotbot:9877']
