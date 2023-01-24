@@ -12,6 +12,9 @@ pymongo==4.3.3
 # PDF parser
 tabula-py
 pandas
+# Site-parser
+requests
+beautifulsoup4
 # Telegram
 aiogram
 # VK
