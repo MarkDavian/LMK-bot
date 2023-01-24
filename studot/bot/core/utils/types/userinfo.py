@@ -1,5 +1,5 @@
 from datetime import time
-from typing import Literal, Optional
+from typing import Literal, Optional, Union
 
 
 class UserInfo:
@@ -14,7 +14,7 @@ class UserInfo:
     place: str
     social: str
 
-    trial_expires: time
+    subcribe: Union[float, None] # Unix timestamp where subcribe will be expired
 
     shedule_notify: bool = False
     changes_notify: bool = True
