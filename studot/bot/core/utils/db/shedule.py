@@ -62,6 +62,34 @@ class SheduleDB:
             return self._database['white-shedule']
         return self._database['green-shedule']
 
+    def get_rings(self):
+        return ('Обычные дни: \n'
+                +'8:00 - 9:30 \n'
+                +'9:40 - 11:10 \n'
+                +'11:40 - 13:10 \n'
+                +'13:30 - 15:00 \n'
+                +'15:10 - 16:40 \n'
+                +'16:50 - 18:20 \n'
+                +'18:30 - 20:00 \n\n'
+
+                'Среда: \n'
+                +'8:00 - 9:30 \n'
+                +'9:40 - 11:10 \n'
+                +'11:40 - 13:10 \n'
+                +'Классный час'
+                +'14:20 - 15:50 \n'
+                +'16:00 – 17:30 \n'
+                +'17:40 – 19:10 \n'
+                +'19:20 – 20:50 \n'
+        )
+
+    def get_week_color(self):
+        c = self._get_week_color()
+        if c == 0:
+            return 'Белая'
+        else:
+            return 'Зеленая'
+
     def _get_week_color(self) -> int:
         SHEDULE_DATE = datetime.datetime(2023, 1, 2)
 
@@ -81,6 +109,27 @@ class SheduleDB:
         shedule_db_logger.info('Getting week shedule')
 
         shedule_collection = self._get_shedule_collection()
+
+        doc = shedule_collection.find_one(
+            {
+                'Место': userInfo.place
+            }
+        )
+        shedule_dict = doc['Курс'][userInfo.course][userInfo.group]
+        weekShedule = WeekSheduleFactory(shedule_dict).get()
+
+        return weekShedule
+
+    def get_next_week_shedule(self, userInfo: UserInfo) -> WeekShedule:
+        shedule_db_logger.info('Getting week shedule')
+
+        this_week_color = self._get_week_color()
+        if this_week_color == 0:
+            next_week_color = 1
+        else:
+            next_week_color = 0
+
+        shedule_collection = self._get_shedule_collection(next_week_color)
 
         doc = shedule_collection.find_one(
             {
@@ -117,6 +166,7 @@ class SheduleDB:
     def get_change_shedule(self, date: datetime.date, userInfo: UserInfo) -> DayShedule:
         shedule_db_logger.info('Getting change shedule')
 
+        f_date = datetime.date(date.year, date.month, date.day)
         if date.weekday() == 4:
             f_date = datetime.date(date.year, date.month, date.day+3)
         elif date.weekday() == 5:
@@ -133,8 +183,10 @@ class SheduleDB:
 
             }
         )
-
-        shedule = doc["Курс"][userInfo.course].get(userInfo.group)
+        shedule = doc["Курс"].get(userInfo.course, None)
+        if shedule is None:
+            return None
+        shedule = shedule.get(userInfo.group, None)
         if shedule is None:
             return None
 
