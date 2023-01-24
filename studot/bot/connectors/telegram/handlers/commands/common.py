@@ -42,8 +42,14 @@ async def cmd_start(message: types.Message, state: FSMContext):
 
 async def group_input(message: types.Message, state: FSMContext):
     group = message.text
+
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    keyboard.row(types.KeyboardButton('1'), types.KeyboardButton('2'))
+    keyboard.row(types.KeyboardButton('3'), types.KeyboardButton('4'))
+
     await message.answer(
-        "Отлично, теперь укажи свой курс цифрой (1-4)"
+        "Отлично, теперь укажи свой курс",
+        reply_markup=keyboard
     )
     await state.update_data(group=group)
     await state.set_state(RegistrationSG.courseInput.state)
@@ -63,28 +69,14 @@ async def course_input(message: types.Message, state: FSMContext):
     )
     usersDB.create_user(userInfo)
     await message.answer(
-        "Успешно зарегистрировал тебя! Теперь ты можешь воспользоваться командами)"
-    )
-
-    await state.finish()
-
-
-async def cmd_cancel(message: types.Message, state: FSMContext):
-    await state.finish()
-    await message.answer(
-        "Отменено", 
+        "Успешно зарегистрировал тебя! Теперь ты можешь воспользоваться /menu )",
         reply_markup=types.ReplyKeyboardRemove()
     )
 
-
-# async def user_menu(message: types.Message, dialog_manager: DialogManager):
-#     await dialog_manager.start(HelpSG.start, mode=StartMode.RESET_STACK)
+    await state.finish()
 
 
 def register_common_cmd(dp: Dispatcher):
     dp.register_message_handler(cmd_start, commands="start", state="*")
     dp.register_message_handler(group_input, state=RegistrationSG.groupInput.state)
     dp.register_message_handler(course_input, state=RegistrationSG.courseInput.state)
-    dp.register_message_handler(cmd_cancel, commands="cancel", state="*")
-    # dp.register_message_handler(user_menu, commands="menu", state="*")
-    dp.register_message_handler(cmd_cancel, Text(equals="отмена", ignore_case=True), state="*")
