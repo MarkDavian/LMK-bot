@@ -51,6 +51,11 @@ class Metrics:
         self._create_gauge(metric_name, *args)
         self._set_gauge_value(metric_name)
     
+    def gauge(self, metric_name: str, value: int):
+        if self.gauges.get(metric_name) is None:
+            self.gauges[metric_name] = Gauge(metric_name, "User Metric")
+        self.gauges[metric_name].set(value)
+
     def _create_gauge(self, metric_name: str, *args) -> None:
         if self.gauges.get(metric_name) is None:
             self.gauges[metric_name] = Gauge(metric_name, "Collectable user stats")
