@@ -2,7 +2,7 @@ import logging
 import json
 import time
 
-# from bot.connectors.register import notifier
+from bot.core.notifier.notifier import notifier
 
 from bot.core.scanner.scanner import Scanner
 from bot.core.data_parser.PDFParser import PDFParser
@@ -30,7 +30,7 @@ master_logger.addHandler(logging.StreamHandler())
 
 
 class DataMaster:
-    def __init__(self, notifier) -> None:
+    def __init__(self) -> None:
         self.db = SheduleDB()
         self.scanner = Scanner()
         self.notifier = notifier
@@ -74,12 +74,10 @@ class DataMaster:
         master_logger.info('Document mongo saved')
 
     def _notify(self):
-        pass
-        # self.notifier.notify_changes()
+        self.notifier.notify_changes()
 
 
 def start_data_master():
-    notifier = ''
     master_logger.info('Starting data master')
-    master = DataMaster(notifier)
+    master = DataMaster()
     master.start()
