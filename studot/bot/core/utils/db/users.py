@@ -23,6 +23,18 @@ class UsersDB:
             userInfo.dict()
         )
 
+    def update_user(self, userInfo: UserInfo):
+        _id = self._users.find_one(
+            {'userID': userInfo.userID}
+        )['_id']
+
+        r = self._users.update_one(
+            {'_id': _id},
+            {
+                '$set': {**userInfo.dict()}
+            }
+        )
+
     def get_user_info(self, user_id: int) -> UserInfo:
         r = self._users.find_one(
             {
@@ -43,11 +55,23 @@ class UsersDB:
 
     def get_users(self, filter: dict) -> dict:
         # TODO Find only with subcription
-        r = self._users.find(
+        result = self._users.find(
             filter
         )
+        
+        users = []
 
-        return list(r)
+        for r in result:
+            userInfo = UserInfo(
+                userID=r['userID'],
+                social=r['social'],
+                course=r['course'],
+                group=r['group'],
+                place=r['place']
+            )
+            users.append(userInfo)
+
+        return users
 
 
 usersDB = UsersDB()
