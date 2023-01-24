@@ -12,6 +12,8 @@ logging.basicConfig(
 from bot.core.data_master.master import start_data_master
 from bot.connectors.register import start_connectors
 
+from bot.core.notifier.notifier import start_notifier
+
 
 main_logger = logging.getLogger(__name__)
 main_logger.setLevel(logging.INFO)
@@ -27,13 +29,16 @@ async def main():
     start_http_server(9877)
     await start_connectors()
 
+
 def run_main():
     asyncio.run(main())
 
 
 if __name__ == "__main__":
     main_proc = multiprocessing.Process(target=run_main)
-    dup = multiprocessing.Process(target=start_data_master)
+    master_proc = multiprocessing.Process(target=start_data_master)
+    notifier_proc = multiprocessing.Process(target=start_notifier)
 
     main_proc.start()
-    dup.start()
+    master_proc.start()
+    notifier_proc.start()
