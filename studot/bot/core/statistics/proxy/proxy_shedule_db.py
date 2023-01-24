@@ -17,6 +17,10 @@ class CollectorProxy_SheduleDB:
         metrics.collect('get_week_shedule', *userInfo.list())
         return self.db.get_week_shedule(userInfo)
 
+    def get_next_week_shedule(self, userInfo: UserInfo) -> WeekShedule:
+        metrics.collect('get_week_shedule', *userInfo.list())
+        return self.db.get_next_week_shedule(userInfo)
+
     def save_shedule(self, placeShedule: dict, place: str, weekType: Literal[0, 1]) -> None:
         return self.db.save_shedule(placeShedule, place, weekType)
 
@@ -31,6 +35,14 @@ class CollectorProxy_SheduleDB:
     def get_combined_shedule(self, userInfo: UserInfo) -> DayShedule:
         metrics.collect('get_combined_shedule', *userInfo.list())
         return self.db.get_combined_shedule(userInfo)
+    
+    def get_rings(self, userInfo: UserInfo):
+        metrics.collect('get_rings', *userInfo.list())
+        return self.db.get_rings()
+
+    def get_week_color(self, userInfo: UserInfo) -> str:
+        metrics.collect('get_week_color', *userInfo.list())
+        return self.db.get_week_color()
 
     def save_change_shedule(self, change: dict, date: str):
         return self.db.save_change_shedule(change, date)
