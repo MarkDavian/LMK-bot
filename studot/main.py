@@ -10,7 +10,7 @@ logging.basicConfig(
 )
 
 from bot.core.data_master.master import start_data_master
-from bot.connectors.register import start_connectors
+from bot.connectors.register import start_connectors, run_tg, run_vk
 
 from bot.core.notifier.notifier import start_notifier
 
@@ -24,18 +24,16 @@ main_logger.addHandler(handler)
 main_logger.addHandler(logging.StreamHandler())
 
 
-async def main():
+def main():
     main_logger.info('Main started')
     start_http_server(9877)
-    await start_connectors()
-
-
-def run_main():
-    asyncio.run(main())
+    start_connectors()
+    # run_tg()
+    # run_vk()
 
 
 if __name__ == "__main__":
-    main_proc = multiprocessing.Process(target=run_main)
+    main_proc = multiprocessing.Process(target=main)
     master_proc = multiprocessing.Process(target=start_data_master)
     notifier_proc = multiprocessing.Process(target=start_notifier)
 
