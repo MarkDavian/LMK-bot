@@ -18,6 +18,9 @@ beautifulsoup4
 # Telegram
 aiogram
 # VK
+vkbottle
+uvloop
+loguru
 # Additional
 python-multipart
 overrides
