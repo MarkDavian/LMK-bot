@@ -9,10 +9,10 @@ bot = Bot(settings.bot_api_key, parse_mode=types.ParseMode.HTML)
 dp = Dispatcher(bot=bot, storage=MemoryStorage())
 
 
-async def start_tg():
+async def __start_tg():
     await register_all(dp)
     await dp.start_polling()
 
 
-if __name__ == "__main__":
-    asyncio.run(start_tg())
+def run_tg_bot():
+    asyncio.run(__start_tg())
