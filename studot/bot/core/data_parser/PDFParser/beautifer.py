@@ -76,9 +76,15 @@ class CSVBeautifer:
                 line = line.strip()
                 if not right_line(line):
                     if line[0] == ',':
-                        line = '""'+line[:-1]
+                        if line[-1] == ',':
+                            line = '""'+line[:-1]
+                        else:
+                            line = '""'+line
                     else:    
-                        line = '"",'+line[:-1]
+                        if line[-1] == ',':
+                            line = '"",'+line[:-1]
+                        else:
+                            line = '"",'+line
                 elif 'практика' in line.lower():
                     break
                     
