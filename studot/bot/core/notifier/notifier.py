@@ -3,6 +3,7 @@ import datetime
 from time import sleep
 
 import telebot
+import vkbottle
 
 from config import settings
 
@@ -26,7 +27,7 @@ class Notifier:
     def __init__(self) -> None:
         notifier_logger.info('Notifier INIT')
         self.tg_bot = telebot.TeleBot(settings.bot_api_key)
-        self.vk_bot = 'vk_bot'
+        self.vk_bot = vkbottle.Bot(settings.vk_bot_api_key)
         self.db = sheduleDB
         self.users_db = usersDB
         notifier_logger.info('Notifier is ready')
@@ -68,18 +69,22 @@ class Notifier:
             self.tg_bot.send_message(
                 userInfo.userID, 
                 (
-                    text+
-                    repr(shedule)
+                    text
+                    +repr(shedule)
                 )
             )
         elif userInfo.social == 'vk':
-            self.vk_bot.send_message(
-                userInfo.userID, 
-                (
-                    text+
-                    repr(shedule)
+            self.vk_bot.api.messages.send(
+                user_id=userInfo.userID, 
+                message=(
+                    text
+                    +repr(shedule)
                 )
             )
+            # conversations = self.vk_bot.api.messages.get_conversations()
+            # for i in range(conversations.count):
+            #     if conversations.items[i].conversation.peer.type.value == 'user':
+            #         self.vk_bot.api.messages.send(peer_id=conversations.items[i].conversation.peer.id, random_id=0, message=txt)
 
     def start(self):
         while True:
@@ -87,7 +92,6 @@ class Notifier:
             if date.weekday != 5:
                 if date.strftime("%H:%M") == '18:00':
                     self.notify_shedule()
-            notifier_logger.info('Sleep')
             sleep(60)
 
 
