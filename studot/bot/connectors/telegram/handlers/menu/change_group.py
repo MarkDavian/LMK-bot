@@ -14,15 +14,16 @@ async def menu_change_group(message: types.Message, state: FSMContext):
     keyboard.add(types.KeyboardButton('Да'))
     keyboard.add(types.KeyboardButton('Нет'))
     
-    message.answer(
+    await message.answer(
         'Изменить группу?',
         reply_markup=keyboard
     )
+    await state.set_state(MenuSG.changeGroup.state)
 
 
 async def check_answer(message: types.Message, state: FSMContext):
     answer = message.text.lower()
-    if answer != 'да':
+    if answer.lower() != 'да':
         await message.answer('Ок. Отменил', reply_markup=types.ReplyKeyboardRemove())
         await state.set_state(MenuSG.start.state)
     else:
@@ -68,5 +69,6 @@ async def course_input(message: types.Message, state: FSMContext):
 
 def register_group_menu(dp: Dispatcher):
     dp.register_message_handler(menu_change_group, Text(equals='Изменить группу', ignore_case=True), state=MenuSG.start.state)
+    dp.register_message_handler(check_answer, state=MenuSG.changeGroup.state)
     dp.register_message_handler(group_input, state=MenuSG.menuGroupInput.state)
     dp.register_message_handler(course_input, state=MenuSG.menuCourseInput.state)
