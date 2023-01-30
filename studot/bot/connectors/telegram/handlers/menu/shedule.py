@@ -103,7 +103,7 @@ async def rings_shedule(message: types.Message, state: FSMContext):
     await message.answer(
         (
             f'Расписание звонков:\n'+
-            repr(rings)
+            rings
         )
     )
 
