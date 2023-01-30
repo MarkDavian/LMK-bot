@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     """Init of all settings
     """
     bot_api_key: str
+    vk_bot_api_key: str
     admin_id: int
 
     mongo_host: str
