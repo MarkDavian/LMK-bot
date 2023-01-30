@@ -28,6 +28,8 @@ class MenuSG(StatesGroup):
     settings_changes = State()
     settings_shedule = State()
 
+    changeGroup = State()
+
 
 async def menu_start(message: types.Message, state: FSMContext):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
