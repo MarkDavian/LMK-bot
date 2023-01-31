@@ -3,7 +3,7 @@ from vkbottle.bot import Message
 
 from bot.connectors.vk.vk_bot_config import labeler, state_dispenser
 
-from bot.connectors.vk.menu.start_menu import MenuSG
+from bot.connectors.vk.menu.start_menu import MenuSG, get_user_info
 
 from bot.core.statistics.proxy.proxy_users_db import usersDB
 
@@ -15,9 +15,9 @@ async def menu_change_group(message: Message):
     await state_dispenser.set(message.peer_id, MenuSG.changeGroup)
     keyboard = (
         Keyboard()
-        .add(Text('Да'), KeyboardButtonColor.POSITIVE)
+        .add(Text('Да'), KeyboardButtonColor.NEGATIVE)
         .row()
-        .add(Text('Нет'), KeyboardButtonColor.NEGATIVE)
+        .add(Text('Нет'), KeyboardButtonColor.POSITIVE)
     )
     
     await message.answer(
@@ -29,8 +29,14 @@ async def menu_change_group(message: Message):
 @labeler.message(text='<answer>', state=MenuSG.changeGroup)
 async def check_answer(message: Message, answer: str):
     if answer.lower() != 'да':
-        await message.answer('Ок. Отменил', keyboard=EMPTY_KEYBOARD)
-        await state_dispenser.set(message.peer_id, MenuSG.changeGroup)
+        keyboard = (
+            Keyboard()
+            .add(Text('Расписание'))
+            .row()
+            .add(Text('Настройки'), KeyboardButtonColor.POSITIVE)
+        )
+        await message.answer('Ок. Отменил', keyboard=keyboard)
+        await state_dispenser.set(message.peer_id, MenuSG.start)
     else:
         await message.answer('Напиши название группы', keyboard=EMPTY_KEYBOARD)
         await state_dispenser.set(message.peer_id, MenuSG.menuGroupInput)
@@ -57,13 +63,10 @@ async def group_input(message: Message, group: str):
 async def course_input(message: Message, course: str):
     group = message.state_peer.payload['group']
 
-    userInfo = UserInfo(
-        userID=message.from_id,
-        social='vk',
-        course=course,
-        group=group,
-        place='ЛМК'
-    )
+    userInfo = get_user_info(message.from_id)
+    userInfo.course = course
+    userInfo.group = group
+
     keyboard = (
         Keyboard()
         .add(Text('Уведомление о заменах')).row()
@@ -73,7 +76,7 @@ async def course_input(message: Message, course: str):
     )
     usersDB.update_user(userInfo)
     await message.answer(
-        f"Успешно! Теперь ты из {userInfo.group} {userInfo.course} курса",
+        f"Успешно! Теперь ты из {userInfo.group}, {userInfo.course} курса",
         keyboard=keyboard
     )
     await state_dispenser.set(message.peer_id, MenuSG.start)
