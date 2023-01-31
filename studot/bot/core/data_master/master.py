@@ -1,3 +1,5 @@
+from typing import Optional
+import datetime
 import logging
 import json
 import time
@@ -58,13 +60,35 @@ class DataMaster:
             master_logger.info('Same file url')
             pass
         else:
-            self._save()
-            self._notify()
+            try:
+                self._save()
+            except Exception as e:
+                master_logger.error(e, exc_info=True)
+                return
+            date = datetime.date.fromisoformat(self.scanner.date)
+            self._notify(date)
 
     def _save(self):
         master_logger.info('Saving changes to DB')
-        jsonParser = JSONParser(PDFParser(src=self.scanner.result))
-        changeShedule = jsonParser.parse()
+
+        pdfParser = PDFParser(src=self.scanner.result)
+        try:
+            pdfParser.process()
+            dict_to_parse = pdfParser.extract_dict()
+        except Exception as e:
+            master_logger.error(e, exc_info=True)
+            self.notifier.alert_admin(f'Проблема с парсом файла -- {e}')
+            self.notifier.alert_admin_file(pdfParser.beauty_csv)
+            return
+
+        jsonParser = JSONParser(dict_to_parse=dict_to_parse)
+        try:
+            changeShedule = jsonParser.parse()
+        except Exception as e:
+            master_logger.error(e, exc_info=True)
+            self.notifier.alert_admin(f'Проблема с парсом файла -- {e}')
+            self.notifier.alert_admin_file(pdfParser.beauty_csv)
+            return
 
         with open(File(f'changes_{self.scanner.date}.json'), 'w') as file:
             json.dump(changeShedule, file, ensure_ascii=False, indent=4, sort_keys=True)
@@ -73,8 +97,8 @@ class DataMaster:
         self.db.save_change_shedule(change=changeShedule, date=self.scanner.date)
         master_logger.info('Document mongo saved')
 
-    def _notify(self):
-        self.notifier.notify_changes()
+    def _notify(self, date: Optional[datetime.date] = None):
+        self.notifier.notify_changes(date)
 
 
 def start_data_master():
