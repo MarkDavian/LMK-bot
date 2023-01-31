@@ -85,6 +85,8 @@ class CSVBeautifer:
                             line = '"",'+line[:-1]
                         else:
                             line = '"",'+line
+                elif line[0] == 'с':
+                    line = '"",'+line[:-1]
                 elif 'практика' in line.lower():
                     break
                     
