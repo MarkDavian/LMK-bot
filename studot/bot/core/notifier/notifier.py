@@ -1,3 +1,4 @@
+from typing import Optional
 import logging
 import datetime
 from time import sleep
@@ -32,10 +33,21 @@ class Notifier:
         self.users_db = usersDB
         notifier_logger.info('Notifier is ready')
 
-    def notify_changes(self):
+    def alert_admin(self, error):
+        self.tg_bot.send_message(settings.admin_id, error)
+
+    def alert_admin_file(self, filename: str):
+        file = open(filename, 'rb')
+        self.tg_bot.send_document(settings.admin_id, file)
+        file.close()
+
+    def notify_changes(self, date: Optional[datetime.date] = None):
         notifier_logger.info('Start to notify changes')
-        date = datetime.date.today()
-        date = datetime.date(date.year, date.month, date.day+1)
+
+        if date is None:
+            date = datetime.date.today()
+            date += datetime.timedelta(days=1)
+
         date_str = date.strftime('%Y-%m-%d')
 
         users = self.users_db.get_users(filter={'changes_notify': True})
@@ -48,10 +60,13 @@ class Notifier:
 
         notifier_logger.info('Notifing is done')
 
-    def notify_shedule(self):
+    def notify_shedule(self, date: Optional[datetime.date] = None):
         notifier_logger.info('Start notifing shedule')
-        date = datetime.date.today()
-        date = datetime.date(date.year, date.month, date.day+1)
+
+        if date is None:
+            date = datetime.date.today()
+            date += datetime.timedelta(days=1)
+
         day = SHEDULE_DAY.WEEKDAYS[date.weekday()]
 
         users = self.users_db.get_users(filter={'shedule_notify': True})
@@ -74,23 +89,23 @@ class Notifier:
                 )
             )
         elif userInfo.social == 'vk':
-            self.vk_bot.api.messages.send(
-                user_id=userInfo.userID, 
-                message=(
-                    text
-                    +repr(shedule)
+            import asyncio
+            asyncio.run(
+                self.vk_bot.api.messages.send(
+                    user_id=userInfo.userID, 
+                    message=(
+                        text
+                        +repr(shedule)
+                    ),
+                    random_id=0
                 )
             )
-            # conversations = self.vk_bot.api.messages.get_conversations()
-            # for i in range(conversations.count):
-            #     if conversations.items[i].conversation.peer.type.value == 'user':
-            #         self.vk_bot.api.messages.send(peer_id=conversations.items[i].conversation.peer.id, random_id=0, message=txt)
 
     def start(self):
         while True:
             date = datetime.datetime.now()
-            if date.weekday != 5:
-                if date.strftime("%H:%M") == '18:00':
+            if date.weekday() != 5:
+                if date.strftime("%H:%M") == '18:30':
                     self.notify_shedule()
             sleep(60)
 
