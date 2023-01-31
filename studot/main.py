@@ -1,5 +1,4 @@
 import multiprocessing
-import asyncio
 import logging
 
 from prometheus_client import start_http_server
@@ -10,7 +9,7 @@ logging.basicConfig(
 )
 
 from bot.core.data_master.master import start_data_master
-from bot.connectors.register import start_connectors, run_tg, run_vk
+from bot.connectors.register import start_connectors
 
 from bot.core.notifier.notifier import start_notifier
 
