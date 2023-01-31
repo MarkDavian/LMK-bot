@@ -53,15 +53,17 @@ async def cmd_get_change_shedule(message: types.Message, state: FSMContext):
     userInfo = get_userinfo(user_id)
 
     now_date = datetime.date.today()
-    change_date = datetime.date(now_date.year, now_date.month, now_date.day+1)
-
+    change_date = now_date+datetime.timedelta(days=1)
     dayShedule = sheduleDB.get_change_shedule(change_date, userInfo)
 
     text = 'Замен нет'
     if dayShedule is not None:
-        text = (f'Замены на {dayShedule.name}:\n'+
-                repr(dayShedule)
-        )
+        if hasattr(dayShedule, 'name'):
+            text = (f'Замены на {dayShedule.name}:\n'+
+                    repr(dayShedule)
+            )
+        else:
+            text = dayShedule
 
     await message.answer(
         text
