@@ -15,11 +15,13 @@ from bot.core.utils.types.userinfo import UserInfo
 @labeler.message(text='Настройки', state=MenuSG.start)
 @labeler.message(text='Назад', state=MenuSG.settings_changes)
 @labeler.message(text='Назад', state=MenuSG.settings_shedule)
+@labeler.message(text='Назад', state=MenuSG.profile)
 async def menu_settings(message: Message):
     await state_dispenser.set(message.peer_id, MenuSG.start)
 
     keyboard = (
         Keyboard()
+        .add(Text('Мой профиль'), KeyboardButtonColor.SECONDARY).row()
         .add(Text('Уведомление о заменах')).row()
         .add(Text('Уведомление о расписании')).row()
         .add(Text('Изменить группу')).row()
@@ -64,7 +66,6 @@ async def notify_changes_enable(message: Message):
     userInfo = get_user_info(message.from_id)
     userInfo.changes_notify = True
     usersDB.update_user(userInfo)
-
     
     keyboard = (
         Keyboard()
@@ -73,7 +74,7 @@ async def notify_changes_enable(message: Message):
         .add(Text('Назад'), KeyboardButtonColor.PRIMARY)
     )
     await message.answer(
-        'Настройка <b>включена</b>.\nТеперь бот будет присылать замены на следующий день',
+        'Настройка включена.\nТеперь бот будет присылать замены на следующий день',
         keyboard=keyboard
     )
 
@@ -90,14 +91,14 @@ async def notify_changes_disable(message: Message):
         .add(Text('Назад'), KeyboardButtonColor.PRIMARY)
     )
     await message.answer(
-        'Настройка <b>выключена</b>.\nТеперь бот не будет присылать замены на следующий день',
+        'Настройка выключена.\nТеперь бот не будет присылать замены на следующий день',
         keyboard=keyboard
     )
 
 
 @labeler.message(text='Уведомление о расписании', state=MenuSG.start)
 async def notify_shedule(message: Message):
-    await state_dispenser.set(message.peer_id, MenuSG.settings_changes)
+    await state_dispenser.set(message.peer_id, MenuSG.settings_shedule)
     userInfo = get_user_info(message.from_id)
 
     keyboard = (
@@ -125,7 +126,7 @@ async def notify_shedule_enable(message: Message):
         .add(Text('Назад'), KeyboardButtonColor.PRIMARY)
     )
     await message.answer(
-        'Настройка <b>включена</b>.\nТеперь бот будет присылать расписание на следующий день',
+        'Настройка включена.\nТеперь бот будет присылать расписание на следующий день',
         keyboard=keyboard
     )
 
@@ -144,6 +145,6 @@ async def notify_shedule_disable(message: Message):
     )
 
     await message.answer(
-        'Настройка <b>выключена</b>.\nТеперь бот не будет присылать расписание на следующий день',
+        'Настройка выключена.\nТеперь бот не будет присылать расписание на следующий день',
         keyboard=keyboard
     )
