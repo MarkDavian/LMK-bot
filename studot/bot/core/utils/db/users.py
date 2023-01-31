@@ -43,13 +43,11 @@ class UsersDB:
         )
         if r is None:
             return None
-            
+
+        r.pop('_id')
+
         userInfo = UserInfo(
-            userID=r['userID'],
-            social=r['social'],
-            course=r['course'],
-            group=r['group'],
-            place=r['place']
+            **r
         )
         return userInfo
 
