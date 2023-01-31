@@ -10,6 +10,7 @@ from bot.core.utils.types.userinfo import UserInfo
 async def menu_settings(message: types.Message, state: FSMContext):
     await state.set_state(MenuSG.start.state)
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    keyboard.add(types.KeyboardButton('Мой профиль'))
     keyboard.add(types.KeyboardButton('Уведомление о заменах'))
     keyboard.add(types.KeyboardButton('Уведомление о расписании'))
     keyboard.add(types.KeyboardButton('Изменить группу'))
@@ -130,6 +131,7 @@ def register_settings_menu(dp: Dispatcher):
     dp.register_message_handler(menu_settings, Text(equals='Настройки', ignore_case=True), state=MenuSG.start.state)
     dp.register_message_handler(menu_settings, Text(equals='Назад', ignore_case=True), state=MenuSG.settings_changes.state)
     dp.register_message_handler(menu_settings, Text(equals='Назад', ignore_case=True), state=MenuSG.settings_shedule.state)
+    dp.register_message_handler(menu_settings, Text(equals='Назад', ignore_case=True), state=MenuSG.profile.state)
 
     dp.register_message_handler(notify_changes, Text(equals='Уведомление о заменах', ignore_case=True), state=MenuSG.start.state)
     dp.register_message_handler(notify_changes_enable, Text(equals='Включить', ignore_case=True), state=MenuSG.settings_changes.state)
