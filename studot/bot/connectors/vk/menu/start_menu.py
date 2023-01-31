@@ -29,7 +29,10 @@ class MenuSG(BaseStateGroup):
 
     changeGroup = 'changeGroup'
 
+    profile = 'profile'
 
+
+@labeler.message(lev='меню')
 @labeler.message(text='Меню')
 @labeler.message(text='/menu')
 @labeler.message(text='Назад', state=MenuSG.start)
