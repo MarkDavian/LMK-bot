@@ -1,4 +1,3 @@
-import asyncio
 from aiogram import Bot, Dispatcher, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from bot.connectors.telegram.handlers.registration import register_all
@@ -14,5 +13,5 @@ async def __start_tg():
     await dp.start_polling()
 
 
-def run_tg_bot():
-    asyncio.run(__start_tg())
+async def run_tg_bot():
+    await __start_tg()
