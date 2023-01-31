@@ -7,6 +7,8 @@ from bot.connectors.telegram.handlers.menu.shedule import register_shedule_menu
 from bot.connectors.telegram.handlers.menu.change_group import register_group_menu
 from bot.connectors.telegram.handlers.menu.additional import register_additional_menu
 from bot.connectors.telegram.handlers.menu.settings import register_settings_menu
+from bot.connectors.telegram.handlers.commands.admin import register_admin_cmd
+from bot.connectors.telegram.handlers.menu.profile import register_profile_menu
 
 
 async def register_all(dp: Dispatcher):
@@ -23,3 +25,5 @@ async def register_all(dp: Dispatcher):
     register_shedule_menu(dp)
     register_group_menu(dp)
     register_settings_menu(dp)
+    register_admin_cmd(dp)
+    register_profile_menu(dp)
