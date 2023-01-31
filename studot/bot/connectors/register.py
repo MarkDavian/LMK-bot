@@ -1,21 +1,19 @@
+import asyncio
 import multiprocessing as mp
 
 from bot.connectors.telegram.registry import run_tg_bot
 from bot.connectors.vk.registry import run_vk_bot
 
 
-def start_connectors():
+async def __start_connectors():
     """Start polling bots
     """
-    run_vk()
-    run_tg()
+    await run_tg_bot()
+    await run_vk_bot()
 
 
-def run_vk():
-    vk_bot_proc = mp.Process(target=run_vk_bot)
-    vk_bot_proc.start()
-
-
-def run_tg():
-    tg_bot_proc = mp.Process(target=run_tg_bot)
-    tg_bot_proc.start()
+def start_connectors():
+    loop = asyncio.get_event_loop()
+    loop.create_task(run_tg_bot())
+    loop.create_task(run_vk_bot())
+    loop.run_forever()
