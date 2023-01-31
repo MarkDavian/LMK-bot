@@ -74,16 +74,18 @@ async def menu_get_tomorrow_shedule(message: Message):
 async def menu_get_change_shedule(message: Message):
     userInfo = get_user_info(message.from_id)
 
-    now_date = datetime.date.today()
-    change_date = datetime.date(now_date.year, now_date.month, now_date.day+1)
+    change_date = datetime.date.today() + datetime.timedelta(days=1)
 
     dayShedule = sheduleDB.get_change_shedule(change_date, userInfo)
 
     text = 'Замен нет'
     if dayShedule is not None:
-        text = (f'Замены на {dayShedule.name}:\n'+
-                repr(dayShedule)
-        )
+        if hasattr(dayShedule, 'name'):
+            text = (f'Замены на {dayShedule.name}:\n'+
+                    repr(dayShedule)
+            )
+        else:
+            text = dayShedule
 
     await message.answer(
         text
@@ -131,7 +133,7 @@ async def menu_day_shedule(message: Message):
         .add(Text('Четверг')).row()
         .add(Text('Пятница')).row()
         .add(Text('Суббота')).row()
-        .add(Text('Назад'))
+        .add(Text('Назад'), KeyboardButtonColor.PRIMARY)
     )
     await message.answer(
         'Какой день?',
@@ -142,6 +144,9 @@ async def menu_day_shedule(message: Message):
 
 @labeler.message(text='<day>', state=MenuSG.menuDayShedule)
 async def day_shedule(message: Message, day=None):
+    if day.lower() == 'назад':
+        return await menu_shedule_menu(message)
+
     userInfo = get_user_info(message.from_id)
 
     shedule = sheduleDB.get_day_shedule(day, userInfo)
