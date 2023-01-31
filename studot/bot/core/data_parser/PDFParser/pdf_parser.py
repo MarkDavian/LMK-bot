@@ -64,10 +64,14 @@ class PDFParser:
         tabula.convert_into(filepath, output_csv, output_format="csv", pages='all')
         pdf_parser_logger.info('PDF converted')
 
-        self.df = CSVBeautifer(output_csv).beautify()
+        csvBeautifer = CSVBeautifer(output_csv)
+        self.df = csvBeautifer.beautify()
+        self.beauty_csv = csvBeautifer.csv
         pdf_parser_logger.info('DataFrame is recieved')
 
         self.parser = CSVParser(dataframe=self.df)
+
+    def process(self):
         pdf_parser_logger.info('Start processing DataFrame')
         self.parser.process()
 
