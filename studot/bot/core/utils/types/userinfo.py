@@ -16,21 +16,29 @@ class UserInfo:
 
     subcribe: Union[float, None] # Unix timestamp where subcribe will be expired
 
-    shedule_notify: bool = False
-    changes_notify: bool = True
-    next_subject_notify: bool = False
+    shedule_notify: bool
+    changes_notify: bool
+    next_subject_notify: bool
 
     def __init__(self, userID: int, social: str, 
                 course: Literal['1', '2', '3', '4'], 
                 group: str, place: str, 
-                trial: Optional[time] = None) -> None:
+                shedule_notify=False,
+                changes_notify=True,
+                next_subject_notify=False,
+                trial_expires: Optional[time] = None
+    ) -> None:
         self.userID = userID
         self.course = course
         self.group = group
         self.place = place
         self.social = social
 
-        self.trial_expires = trial
+        self.shedule_notify = shedule_notify
+        self.changes_notify = changes_notify
+        self.next_subject_notify = next_subject_notify
+
+        self.trial_expires = trial_expires
 
     def dict(self) -> dict:
         return vars(self)
