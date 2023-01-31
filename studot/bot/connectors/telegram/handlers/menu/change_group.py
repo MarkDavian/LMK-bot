@@ -4,13 +4,15 @@ from aiogram.dispatcher import FSMContext
 
 from bot.core.statistics.proxy.proxy_users_db import usersDB
 
+from bot.connectors.telegram.handlers.menu.start_menu import get_user_info
+
 from bot.core.utils.types.userinfo import UserInfo
 
 from bot.connectors.telegram.handlers.menu.start_menu import MenuSG
 
 
 async def menu_change_group(message: types.Message, state: FSMContext):
-    keyboard = types.ReplyKeyboardMarkup()
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     keyboard.add(types.KeyboardButton('Да'))
     keyboard.add(types.KeyboardButton('Нет'))
     
@@ -24,10 +26,13 @@ async def menu_change_group(message: types.Message, state: FSMContext):
 async def check_answer(message: types.Message, state: FSMContext):
     answer = message.text.lower()
     if answer.lower() != 'да':
-        await message.answer('Ок. Отменил', reply_markup=types.ReplyKeyboardRemove())
+        keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        keyboard.add(types.KeyboardButton('Расписание'))
+        keyboard.add(types.KeyboardButton('Настройки'))
+        await message.answer('Ок. Отменил', reply_markup=keyboard)
         await state.set_state(MenuSG.start.state)
     else:
-        await message.answer('Напиши название группы')
+        await message.answer('Напиши название группы', reply_markup=types.ReplyKeyboardRemove())
         await state.set_state(MenuSG.menuGroupInput.state)
 
 
@@ -51,16 +56,13 @@ async def course_input(message: types.Message, state: FSMContext):
     data = await state.get_data()
     group = data['group']
 
-    userInfo = UserInfo(
-        userID=message.from_user.id,
-        social='telegram',
-        course=course,
-        group=group,
-        place='ЛМК'
-    )
+    userInfo = get_user_info(message.from_user.id)
+    userInfo.course = course
+    userInfo.group = group
+
     usersDB.update_user(userInfo)
     await message.answer(
-        f"Успешно! Теперь ты из {userInfo.group} {userInfo.course} курса",
+        f"Успешно!\nТеперь ты из {userInfo.group}, {userInfo.course} курса",
         reply_markup=types.ReplyKeyboardRemove()
     )
 
