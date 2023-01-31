@@ -63,32 +63,34 @@ class SheduleDB:
         return self._database['green-shedule']
 
     def get_rings(self):
-        return ('Обычные дни: \n'
-                +'8:00 - 9:30 \n'
-                +'9:40 - 11:10 \n'
-                +'11:40 - 13:10 \n'
-                +'13:30 - 15:00 \n'
-                +'15:10 - 16:40 \n'
-                +'16:50 - 18:20 \n'
-                +'18:30 - 20:00 \n\n'
+        rings = [
+            'Обычные дни:',
+            '8:00  - 9:30',
+            '9:40  - 11:10',
+            '11:40 - 13:10',
+            '13:30 - 15:00',
+            '15:10 - 16:40',
+            '16:50 - 18:20',
+            '18:30 - 20:00',
 
-                'Среда: \n'
-                +'8:00 - 9:30 \n'
-                +'9:40 - 11:10 \n'
-                +'11:40 - 13:10 \n'
-                +'Классный час'
-                +'14:20 - 15:50 \n'
-                +'16:00 – 17:30 \n'
-                +'17:40 – 19:10 \n'
-                +'19:20 – 20:50 \n'
-        )
+            'Среда:',
+            '8:00  - 9:30',
+            '9:40  - 11:10',
+            '11:40 - 13:10',
+            'Классный час 13:30 - 14:10',
+            '14:20 – 15:50',
+            '16:00 – 17:30',
+            '17:40 – 19:10',
+            '19:20 – 20:50'
+        ]
+        txt = '\n'.join(rings)
+        return txt
 
     def get_week_color(self):
         c = self._get_week_color()
         if c == 0:
             return 'Белая'
-        else:
-            return 'Зеленая'
+        return 'Зеленая'
 
     def _get_week_color(self) -> int:
         SHEDULE_DATE = datetime.datetime(2023, 1, 2)
@@ -166,29 +168,37 @@ class SheduleDB:
     def get_change_shedule(self, date: datetime.date, userInfo: UserInfo) -> DayShedule:
         shedule_db_logger.info('Getting change shedule')
 
-        f_date = datetime.date(date.year, date.month, date.day)
-        if date.weekday() == 4:
-            f_date = datetime.date(date.year, date.month, date.day+3)
-        elif date.weekday() == 5:
-            f_date = datetime.date(date.year, date.month, date.day+2)
+        f_date = date
+        if date.weekday() == 5:
+            # Saturday to Monday
+            f_date += datetime.timedelta(days=2)
         elif date.weekday() == 6:
-            f_date = datetime.date(date.year, date.month, date.day+1)
-
-        date_str = f_date.strftime('%Y-%m-%d')
+            # Sunday to Monday
+            f_date += datetime.timedelta(days=1)
 
         doc = self._change_shedule.find_one(
             {
                 "Место": userInfo.place,
-                "Дата": date_str
+                "Дата": f_date.strftime('%Y-%m-%d')
+
+            }
+        )
+        if not doc:
+            today = datetime.date.today()
+            f_date = today
+            doc = self._change_shedule.find_one(
+            {
+                "Место": userInfo.place,
+                "Дата": today.strftime('%Y-%m-%d')
 
             }
         )
         shedule = doc["Курс"].get(userInfo.course, None)
         if shedule is None:
-            return None
+            return f'В заменах твоего курса ({userInfo.course}) нет'
         shedule = shedule.get(userInfo.group, None)
         if shedule is None:
-            return None
+            return f'В заменах твоей группы ({userInfo.group}) нет'
 
         day = SHEDULE_DAY.WEEKDAYS[f_date.weekday()]
 
