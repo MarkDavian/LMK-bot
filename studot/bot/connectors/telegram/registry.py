@@ -1,11 +1,18 @@
 from aiogram import Bot, Dispatcher, types
+from aiogram.contrib.fsm_storage.mongo import MongoStorage
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from bot.connectors.telegram.handlers.registration import register_all
 from config import settings
 
 
+mongoStorage = MongoStorage(
+    host=settings.mongo_host[9:],
+    port=settings.mongo_port,
+    db_name='telegram_states'
+)
+
 bot = Bot(settings.bot_api_key, parse_mode=types.ParseMode.HTML)
-dp = Dispatcher(bot=bot, storage=MemoryStorage())
+dp = Dispatcher(bot=bot, storage=mongoStorage)
 
 
 async def __start_tg():
