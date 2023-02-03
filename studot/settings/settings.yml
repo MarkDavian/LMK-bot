@@ -16,7 +16,10 @@ app:
       - Social
     timing: yes
     storage: CSV
-    # Available types (CSV, Mongo, Text)
+    available-storage-types:
+      - CSV
+      - Mongo
+      - Text
     export-port: 9877
 
   site-scanner:
