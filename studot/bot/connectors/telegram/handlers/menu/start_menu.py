@@ -6,7 +6,6 @@ from aiogram.dispatcher import FSMContext
 from bot.core.statistics.proxy.proxy_users_db import usersDB
 
 from bot.core.utils.types.userinfo import UserInfo
-from bot.core.utils.types.user import User
 
 
 def get_user_info(user_id: int) -> UserInfo:
