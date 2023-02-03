@@ -1,14 +1,15 @@
 from datetime import timedelta, timezone
-import json
+import yaml
 from pydantic import BaseSettings
 
 
-with open('settings/settings.json', 'rb') as file:
-    settings_json = json.load(file)
+with open('settings/settings.yml', 'rb') as file:
+    settings_yml = yaml.safe_load(file)
+    settings_yml = settings_yml['app']
 
 
-_TZ_OFFSET = settings_json['timezone']['offset']
-_TZ_NAME = settings_json['timezone']['name']
+_TZ_OFFSET = settings_yml['timezone']['offset']
+_TZ_NAME = settings_yml['timezone']['name']
 
 
 class Settings(BaseSettings):
@@ -25,12 +26,12 @@ class Settings(BaseSettings):
     server_url: str
     tz_info = timezone(timedelta(hours=_TZ_OFFSET), name=_TZ_NAME) 
 
-    metrics = settings_json['metrics']
+    metrics = settings_yml['metrics']
     metrics_filepath = metrics['filepath']
 
-    scanner = settings_json['site-scanner']
+    scanner = settings_yml['site-scanner']
 
-    files = settings_json['files']
+    files = settings_yml['files']
 
 
     class Config:
