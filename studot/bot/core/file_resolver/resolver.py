@@ -36,10 +36,11 @@ class FileNameResolver:
         resolver_logger.info(f'Resolving filename {self.filename}')
         name, ext = self.filename.split('.')
 
+        if self.fileResolver.more_than_max_count():
+            self.fileResolver.delete_one()
+
         if os.path.exists(PATH+self.filename):
             count = self.count_same_files(name)
-            if self.fileResolver.more_than_max_count(count):
-                self.fileResolver.delete_one()
             return f"{name}_{count}.{ext}"
         else:
             return self.filename
@@ -50,9 +51,9 @@ class FileNameResolver:
 
 
 class FileResolver:
-    def more_than_max_count(self, count: int) -> bool:
+    def more_than_max_count(self) -> bool:
         files = glob.glob(PATH+'*')
-        if len(files) > MAX:
+        if len(files) >= MAX:
             return True
         return False
 
@@ -62,7 +63,7 @@ class FileResolver:
 
     def delete_many(self, count: int) -> None:
         dates, date_to_file = self._get_dates_and_files()
-        if count > dates:
+        if count >= dates:
             count = len(dates)
 
         files = date_to_file[len(dates)-count:-1]
