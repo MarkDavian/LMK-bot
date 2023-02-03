@@ -17,6 +17,7 @@ requests
 beautifulsoup4
 # Telegram
 aiogram
+telebot
 # VK
 vkbottle
 uvloop
@@ -24,3 +25,4 @@ loguru
 # Additional
 python-multipart
 overrides
+yaml
