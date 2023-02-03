@@ -27,4 +27,4 @@ app:
 
   files:
     path: "files/"
-    max-count: 10
+    max-count: 8
