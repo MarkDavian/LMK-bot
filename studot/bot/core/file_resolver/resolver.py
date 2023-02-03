@@ -1,4 +1,5 @@
 import os
+import platform
 import glob
 import logging
 
@@ -16,6 +17,7 @@ resolver_logger.addHandler(logging.StreamHandler())
 
 
 PATH = settings.files['path']
+MAX = settings.files['max-count']
 
 
 class File(str):
@@ -36,6 +38,8 @@ class FileNameResolver:
 
         if os.path.exists(PATH+self.filename):
             count = self.count_same_files(name)
+            if self.fileResolver.more_than_max_count(count):
+                self.fileResolver.delete_one()
             return f"{name}_{count}.{ext}"
         else:
             return self.filename
@@ -46,5 +50,60 @@ class FileNameResolver:
 
 
 class FileResolver:
-    def __init__(self) -> None:
-        self.files_mx_count = settings.files['max-count']
+    def more_than_max_count(self, count: int) -> bool:
+        files = glob.glob(PATH+'*')
+        if len(files) > MAX:
+            return True
+        return False
+
+    def delete_one(self) -> None:
+        filename = self.get_the_oldest()
+        self._delete(filename)
+
+    def delete_many(self, count: int) -> None:
+        dates, date_to_file = self._get_dates_and_files()
+        if count > dates:
+            count = len(dates)
+
+        files = date_to_file[len(dates)-count:-1]
+        
+        for file in files:
+            self._delete(file)
+
+    def get_the_oldest(self) -> str:
+        dates, date_to_file = self._get_dates_and_files()
+
+        return date_to_file[dates[0]]
+
+    def _get_dates_and_files(self) -> tuple[list[str], dict]:
+        files = glob.glob(PATH+'*')
+        date_to_file = {}
+        dates = []
+        for file in files:
+            cr_date = self.creation_date(file)
+            date_to_file[cr_date] = file
+            dates.append(cr_date)
+
+        dates.sort()
+        
+        return dates, date_to_file
+
+    def _delete(self, filename: str) -> None:
+        os.remove(filename)
+
+    def creation_date(self, path: str):
+        """
+        Try to get the date that a file was created, falling back to when it was
+        last modified if that isn't possible.
+        See http://stackoverflow.com/a/39501288/1709587 for explanation.
+        """
+        if platform.system() == 'Windows':
+            return os.path.getctime(path)
+        else:
+            stat = os.stat(path)
+            try:
+                return stat.st_birthtime
+            except AttributeError:
+                # We're probably on Linux. No easy way to get creation dates here,
+                # so we'll settle for when its content was last modified.
+                return stat.st_mtime
