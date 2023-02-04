@@ -6,7 +6,6 @@ from config import settings
 
 
 mongoStorage = MongoStorage(
-    host=settings.mongo_host[9:],
     port=settings.mongo_port,
     db_name='telegram_states'
 )
