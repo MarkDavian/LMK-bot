@@ -9,6 +9,9 @@ ENV PYTHONDONTWRITEBYTECODE=1
 # Turns off buffering for easier container logging
 ENV PYTHONUNBUFFERED=1
 
+RUN apt-get -y update
+RUN apt-get -y install default-jre
+
 # Install pip requirements
 COPY requirements.txt .
 
