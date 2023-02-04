@@ -15,6 +15,7 @@ pandas
 # Site-parser
 requests
 beautifulsoup4
+html5lib
 # Telegram
 aiogram
 telebot
@@ -25,4 +26,3 @@ loguru
 # Additional
 python-multipart
 overrides
-yaml
