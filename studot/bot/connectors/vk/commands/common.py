@@ -4,6 +4,8 @@ from vkbottle.dispatch.rules.base import CommandRule
 
 from bot.connectors.vk.vk_bot_config import labeler, state_dispenser
 
+from bot.connectors.vk.menu.start_menu import MenuSG
+
 from bot.core.statistics.proxy.proxy_users_db import usersDB
 
 from bot.core.utils.types.userinfo import UserInfo
@@ -70,11 +72,18 @@ async def course_input(message: Message, course: str):
         place='ЛМК'
     )
     usersDB.create_user(userInfo)
-    await message.answer(
-        "Успешно зарегистрировал тебя! Теперь ты можешь воспользоваться /menu )",
-        keyboard=EMPTY_KEYBOARD
-    )
 
-    # Remove user state
+    keyboard = (
+        Keyboard()
+        .add(Text('Расписание'))
+        .row()
+        .add(Text('Настройки'), KeyboardButtonColor.POSITIVE)
+    )
     await state_dispenser.delete(message.peer_id)
+    await state_dispenser.set(message.peer_id, MenuSG.start)
+
+    await message.answer(
+        "Успешно зарегистрировал тебя!)",
+        keyboard=keyboard
+    )
 
