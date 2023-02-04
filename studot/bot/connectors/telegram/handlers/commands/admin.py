@@ -86,7 +86,17 @@ async def save_to_db(changes: dict, date: str):
     sheduleDB.save_change_shedule(changes, date)
 
 
+async def cmd_get_metrcis_csv(message: types.Message, state: FSMContext):
+    await state.finish()
+    if message.from_user.id != settings.admin_id:
+        return
+    
+    with open('data/metrics/metrics.csv', 'rb') as file:
+        await message.bot.send_document(settings.admin_id, file)
+    
+
 def register_admin_cmd(dp: Dispatcher):
     dp.register_message_handler(cmd_update_changes, commands="update_changes", state="*")
+    dp.register_message_handler(cmd_get_metrcis_csv, commands="metrics", state="*")
     dp.register_message_handler(get_date, state=UpdateChangesSG.start)
     dp.register_message_handler(get_file_csv, state=UpdateChangesSG.csv_set, content_types=ContentTypes.DOCUMENT)
