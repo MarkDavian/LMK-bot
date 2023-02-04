@@ -16,7 +16,7 @@ app:
       - Social
     timing: yes
     storage: CSV
-    available-storage-types:
+    available-storage-types: # DO NOT CHANGE OR DELETE
       - CSV
       - Mongo
       - Text

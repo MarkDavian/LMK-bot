@@ -29,7 +29,7 @@ shedule_db_logger.addHandler(logging.StreamHandler())
 
 class SheduleDB:
     def __init__(self) -> None:
-        shedule_db_logger.info('Initiating MongoDB client')
+        shedule_db_logger.info('Initiating MongoDB SHEDULE client')
         client = pymongo.MongoClient(
             settings.mongo_host,
             settings.mongo_port
@@ -42,7 +42,7 @@ class SheduleDB:
         self._change_shedule = self._database['change_shedule']
         self._combined_shedule = self._database['combined_shedule']
 
-        shedule_db_logger.info('Client is ready')
+        shedule_db_logger.info('SHEDULE Client is ready')
 
     def _get_shedule_collection(self, week_type: Literal[0, 1, None] = None):
         """Get shedule collection by week color

@@ -2,14 +2,41 @@ from datetime import timedelta, timezone
 import yaml
 from pydantic import BaseSettings
 
+try:
+    with open('settings/settings.yml', 'rb') as file:
+        settings_yml = yaml.safe_load(file)
+        settings_yml = settings_yml['app']
+except:
+    print('No settings file. Use default settings')
+    settings_yml = {
+        'timezone': {
+            'name': 'MSC',
+            'offset': 3
+        },
+        'metrics': {
+            'filepath': 'data/metrics/metrics',
+            'fields': ['Place', 'Course',
+                       'Group', 'UserId',
+                       'Social'],
+            'timing': True,
+            'storage': 'CSV',
+            'available-storage-types': [
+                'CSV', 'Mongo', 'Text'
+            ],
+            'export-port': 9877
+        },
+        'site-scanner': {
+            'time-interval': '10 m'
+        },
+        'files': {
+            'path': 'files/',
+            'max-count': 10
+        }
+    }
 
-with open('settings/settings.yml', 'rb') as file:
-    settings_yml = yaml.safe_load(file)
-    settings_yml = settings_yml['app']
 
-
-_TZ_OFFSET = settings_yml['timezone']['offset']
 _TZ_NAME = settings_yml['timezone']['name']
+_TZ_OFFSET = settings_yml['timezone']['offset']
 
 
 class Settings(BaseSettings):
