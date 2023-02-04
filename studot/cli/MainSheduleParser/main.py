@@ -1,13 +1,15 @@
+import json
+import os
 import pandas as pd
 
-df = pd.read_excel('3_kurs.xlsx')
+df = pd.read_excel('4_curs.xlsx')
 
-print(df.to_json('jason.json', force_ascii=False))
-
-import json
+df.to_json('jason.json', force_ascii=False)
 
 with open('jason.json', 'r') as file:
     r = json.load(file)
+
+os.remove('jason.json')
 
 r.pop('день')
 r.pop('пара')
@@ -61,21 +63,21 @@ for group, shed in r.items():
     next[group] = day_dict
 
 
-with open('next.json', 'w') as file:
-    json.dump(r, file, ensure_ascii=False, indent=4)
+# with open('next.json', 'w') as file:
+#     json.dump(r, file, ensure_ascii=False, indent=4)
 
 
-with open('result.json', 'w') as file:
-    json.dump(next, file, ensure_ascii=False, indent=4)
+# with open('result.json', 'w') as file:
+#     json.dump(next, file, ensure_ascii=False, indent=4)
 
 
-with open('result.json', 'r') as var, open("final.json", "w") as file:
-    for line in var:
-        line = line.rstrip()
-        file.write(line)
+# with open('result.json', 'r') as var, open("final.json", "w") as file:
+#     for line in var:
+#         line = line.rstrip()
+#         file.write(line)
 
-with open('final.json', 'r') as file:
-    r = json.load(file)
+# with open('final.json', 'r') as file:
+#     r = json.load(file)
 
 with open('final.json', "w") as file:
     json.dump(next, file, ensure_ascii=False, indent=4)
