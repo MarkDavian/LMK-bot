@@ -8,7 +8,7 @@ from bot.core.statistics.proxy.proxy_users_db import usersDB
 from bot.connectors.telegram.handlers.menu.start_menu import MenuSG, get_user_info
 
 
-def get_bool_str(b: bool) -> str:
+async def get_bool_str(b: bool) -> str:
     if b:
         return 'Вкл.'
     return 'Выкл.'
@@ -16,13 +16,13 @@ def get_bool_str(b: bool) -> str:
 
 async def menu_profile(message: types.Message, state: FSMContext):
     await state.set_state(MenuSG.profile.state)
-    userInfo = get_user_info(message.from_user.id)
+    userInfo = await get_user_info(message.from_user.id)
 
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     keyboard.add(types.KeyboardButton('Назад'))
 
-    ch_ntf = get_bool_str(userInfo.changes_notify)
-    shed_ntf = get_bool_str(userInfo.shedule_notify)
+    ch_ntf = await get_bool_str(userInfo.changes_notify)
+    shed_ntf = await get_bool_str(userInfo.shedule_notify)
 
     await message.answer(
         (

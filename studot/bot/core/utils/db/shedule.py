@@ -3,8 +3,8 @@ import logging
 
 from typing import Literal, Union
 
-import pymongo
-# from motor.motor_asyncio import AsyncIOMotorClient
+# import pymongo
+from motor.motor_asyncio import AsyncIOMotorClient
 
 from config import settings
 
@@ -30,7 +30,7 @@ shedule_db_logger.addHandler(logging.StreamHandler())
 class SheduleDB:
     def __init__(self) -> None:
         shedule_db_logger.info('Initiating MongoDB SHEDULE client')
-        client = pymongo.MongoClient(
+        client = AsyncIOMotorClient(
             settings.mongo_host,
             settings.mongo_port
         )
@@ -44,7 +44,7 @@ class SheduleDB:
 
         shedule_db_logger.info('SHEDULE Client is ready')
 
-    def _get_shedule_collection(self, week_type: Literal[0, 1, None] = None):
+    async def _get_shedule_collection(self, week_type: Literal[0, 1, None] = None):
         """Get shedule collection by week color
 
         Args:
@@ -56,13 +56,13 @@ class SheduleDB:
         if week_type is not None:
             color = week_type
         else:
-            color = self._get_week_color()
+            color = await self._get_week_color()
 
         if color == 0: # white color
             return self._database['white-shedule']
         return self._database['green-shedule']
 
-    def get_rings(self):
+    async def get_rings(self):
         rings = [
             'Обычные дни:',
             '8:00  - 9:30',
@@ -86,13 +86,13 @@ class SheduleDB:
         txt = '\n'.join(rings)
         return txt
 
-    def get_week_color(self):
-        c = self._get_week_color()
+    async def get_week_color(self):
+        c = await self._get_week_color()
         if c == 0:
             return 'Белая'
         return 'Зеленая'
 
-    def _get_week_color(self) -> int:
+    async def _get_week_color(self) -> int:
         SHEDULE_DATE = datetime.datetime(2023, 1, 2)
 
         now_date = datetime.datetime.now()
@@ -107,12 +107,12 @@ class SheduleDB:
             # print('зеленая')
             return 1
 
-    def get_week_shedule(self, userInfo: UserInfo) -> WeekShedule:
+    async def get_week_shedule(self, userInfo: UserInfo) -> WeekShedule:
         shedule_db_logger.info('Getting week shedule')
 
-        shedule_collection = self._get_shedule_collection()
+        shedule_collection = await self._get_shedule_collection()
 
-        doc = shedule_collection.find_one(
+        doc = await shedule_collection.find_one(
             {
                 'Место': userInfo.place
             }
@@ -122,18 +122,18 @@ class SheduleDB:
 
         return weekShedule
 
-    def get_next_week_shedule(self, userInfo: UserInfo) -> WeekShedule:
+    async def get_next_week_shedule(self, userInfo: UserInfo) -> WeekShedule:
         shedule_db_logger.info('Getting week shedule')
 
-        this_week_color = self._get_week_color()
+        this_week_color = await self._get_week_color()
         if this_week_color == 0:
             next_week_color = 1
         else:
             next_week_color = 0
 
-        shedule_collection = self._get_shedule_collection(next_week_color)
+        shedule_collection = await self._get_shedule_collection(next_week_color)
 
-        doc = shedule_collection.find_one(
+        doc = await shedule_collection.find_one(
             {
                 'Место': userInfo.place
             }
@@ -143,12 +143,12 @@ class SheduleDB:
 
         return weekShedule
 
-    def get_day_shedule(self, day: str, userInfo: UserInfo) -> DayShedule:
+    async def get_day_shedule(self, day: str, userInfo: UserInfo) -> DayShedule:
         shedule_db_logger.info('Getting day shedule')
 
-        shedule_collection = self._get_shedule_collection()
+        shedule_collection = await self._get_shedule_collection()
 
-        doc = shedule_collection.find_one(
+        doc = await shedule_collection.find_one(
             {
                 'Место': userInfo.place
             }
@@ -165,7 +165,7 @@ class SheduleDB:
 
         return dayShedule
 
-    def get_change_shedule(self, date: datetime.date, userInfo: UserInfo) -> DayShedule:
+    async def get_change_shedule(self, date: datetime.date, userInfo: UserInfo) -> DayShedule:
         shedule_db_logger.info('Getting change shedule')
 
         f_date = date
@@ -176,7 +176,7 @@ class SheduleDB:
             # Sunday to Monday
             f_date += datetime.timedelta(days=1)
 
-        doc = self._change_shedule.find_one(
+        doc = await self._change_shedule.find_one(
             {
                 "Место": userInfo.place,
                 "Дата": f_date.strftime('%Y-%m-%d')
@@ -186,7 +186,7 @@ class SheduleDB:
         if not doc:
             today = datetime.date.today()
             f_date = today
-            doc = self._change_shedule.find_one(
+            doc = await self._change_shedule.find_one(
             {
                 "Место": userInfo.place,
                 "Дата": today.strftime('%Y-%m-%d')
@@ -210,41 +210,41 @@ class SheduleDB:
 
         return dayShedule
 
-    def get_combined_shedule(self, userInfo: UserInfo) -> DayShedule:
+    async def get_combined_shedule(self, userInfo: UserInfo) -> DayShedule:
         shedule_db_logger.info('Getting combined shedule')
 
-        shedule_collection = self._get_shedule_collection()
+        shedule_collection = await self._get_shedule_collection()
         # TODO
 
-    def save_shedule(self, placeShedule: dict, place: str, weekType: Literal[0, 1]) -> None:
+    async def save_shedule(self, placeShedule: dict, place: str, weekType: Literal[0, 1]) -> None:
         shedule_db_logger.info('Saving group shedule')
 
-        shedule_collection = self._get_shedule_collection(week_type=weekType)
+        shedule_collection = await self._get_shedule_collection(week_type=weekType)
 
-        r = shedule_collection.insert_one(
+        r = await shedule_collection.insert_one(
             {
                 "Место": place,
                 **placeShedule
             }
         )
 
-    def save_change_shedule(self, change: dict, date: str):
+    async def save_change_shedule(self, change: dict, date: str):
         shedule_db_logger.info('Saving change shedule')
 
-        r = self._change_shedule.find_one(
+        r = await self._change_shedule.find_one(
             {
                 "Место": "ЛМК",
                 "Дата": date,
             }
         )
         if r is not None:
-            re = self._change_shedule.delete_one(
+            re = await self._change_shedule.delete_one(
                 {
                     "_id": r['_id']
                 }
             )
         
-        r = self._change_shedule.insert_one(
+        r = await self._change_shedule.insert_one(
             {
                 "Место": "ЛМК",
                 "Дата": date,

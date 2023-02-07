@@ -1,10 +1,10 @@
-import pymongo
-# from motor.motor_asyncio import AsyncIOMotorClient
+# import pymongo
+from motor.motor_asyncio import AsyncIOMotorClient
 
 from config import settings
 
 
-client = pymongo.MongoClient(
+client = AsyncIOMotorClient(
     settings.mongo_host,
     settings.mongo_port
 )

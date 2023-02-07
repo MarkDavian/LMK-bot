@@ -36,7 +36,7 @@ class Metrics:
         metrics_logger.info('Getting storage')
         self.storage: IMetricsStorage = MetricsStorageFactory.get_storage(settings.metrics['storage'])
 
-    def collect(self, metric_name: str, *args) -> None:
+    async def collect(self, metric_name: str, *args) -> None:
         """ONLY with fields in settings.json
 
         Args:
@@ -44,26 +44,26 @@ class Metrics:
             args: Metrics that provided in settings.json
         """
         metrics_logger.info('Collect new metrics')
-        self.export(metric_name, *args)
-        self.storage.save(metric_name, *args)
+        await self.export(metric_name, *args)
+        await self.storage.save(metric_name, *args)
 
-    def export(self, metric_name: str, *args) -> None:
-        self._create_gauge(metric_name, *args)
-        self._set_gauge_value(metric_name)
+    async def export(self, metric_name: str, *args) -> None:
+        await self._create_gauge(metric_name, *args)
+        await self._set_gauge_value(metric_name)
     
-    def gauge(self, metric_name: str, value: int):
+    async def gauge(self, metric_name: str, value: int):
         if self.gauges.get(metric_name) is None:
             self.gauges[metric_name] = Gauge(metric_name, "User Metric")
         self.gauges[metric_name].set(value)
 
-    def _create_gauge(self, metric_name: str, *args) -> None:
+    async def _create_gauge(self, metric_name: str, *args) -> None:
         if self.gauges.get(metric_name) is None:
             self.gauges[metric_name] = Gauge(metric_name, "Collectable user stats")
             self._metrics[metric_name] = 1
         else:
             self._metrics[metric_name] += 1
 
-    def _set_gauge_value(self, metric_name: str) -> None:
+    async def _set_gauge_value(self, metric_name: str) -> None:
         value = self._metrics[metric_name]
         self.gauges[metric_name].set(value)
     

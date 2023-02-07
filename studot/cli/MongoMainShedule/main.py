@@ -29,7 +29,7 @@ class SheduleDB:
     def __init__(self) -> None:
         shedule_db_logger.info('Initiating MongoDB client')
         client = pymongo.MongoClient(
-            settings.mongo_host,
+            'mongodb://localhost',
             settings.mongo_port
         )
 

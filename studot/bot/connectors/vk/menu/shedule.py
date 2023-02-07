@@ -38,12 +38,12 @@ async def menu_shedule_menu(message: Message):
 
 @labeler.message(text='Сегодня', state=MenuSG.start)
 async def menu_get_today_shedule(message: Message):
-    userInfo = get_user_info(message.from_id)
+    userInfo = await get_user_info(message.from_id)
 
     day = datetime.date.today().weekday()
     today = SHEDULE_DAY.WEEKDAYS[day]
 
-    dayShedule = sheduleDB.get_day_shedule(today, userInfo)
+    dayShedule = await sheduleDB.get_day_shedule(today, userInfo)
 
     await message.answer(
         (
@@ -55,12 +55,12 @@ async def menu_get_today_shedule(message: Message):
 
 @labeler.message(text='Завтра', state=MenuSG.start)
 async def menu_get_tomorrow_shedule(message: Message):
-    userInfo = get_user_info(message.from_id)
+    userInfo = await get_user_info(message.from_id)
 
     day = datetime.date.today().weekday()
     today = SHEDULE_DAY.WEEKDAYS[day+1]
 
-    dayShedule = sheduleDB.get_day_shedule(today, userInfo)
+    dayShedule = await sheduleDB.get_day_shedule(today, userInfo)
 
     await message.answer(
         (
@@ -72,11 +72,11 @@ async def menu_get_tomorrow_shedule(message: Message):
 
 @labeler.message(text='Замены', state=MenuSG.start)
 async def menu_get_change_shedule(message: Message):
-    userInfo = get_user_info(message.from_id)
+    userInfo = await get_user_info(message.from_id)
 
     change_date = datetime.date.today() + datetime.timedelta(days=1)
 
-    dayShedule = sheduleDB.get_change_shedule(change_date, userInfo)
+    dayShedule = await sheduleDB.get_change_shedule(change_date, userInfo)
 
     text = 'Замен нет'
     if dayShedule is not None:
@@ -94,9 +94,9 @@ async def menu_get_change_shedule(message: Message):
 
 @labeler.message(text='Эта неделя', state=MenuSG.start)
 async def menu_get_this_week(message: Message):
-    userInfo = get_user_info(message.from_id)
+    userInfo = await get_user_info(message.from_id)
 
-    shedule = sheduleDB.get_week_shedule(userInfo)
+    shedule = await sheduleDB.get_week_shedule(userInfo)
 
     await message.answer(
         repr(shedule)
@@ -105,9 +105,9 @@ async def menu_get_this_week(message: Message):
 
 @labeler.message(text='След. неделя', state=MenuSG.start)
 async def menu_get_next_week(message: Message):
-    userInfo = get_user_info(message.from_id)
+    userInfo = await get_user_info(message.from_id)
 
-    shedule = sheduleDB.get_next_week_shedule(userInfo)
+    shedule = await sheduleDB.get_next_week_shedule(userInfo)
     
     await message.answer(
         repr(shedule)
@@ -116,15 +116,16 @@ async def menu_get_next_week(message: Message):
 
 @labeler.message(text='Цвет недели', state=MenuSG.additional)
 async def menu_week_color(message: Message):
-    userInfo = get_user_info(message.from_id)
+    userInfo = await get_user_info(message.from_id)
 
-    color = sheduleDB.get_week_color(userInfo)
+    color = await sheduleDB.get_week_color(userInfo)
 
     await message.answer(color)
 
 
 @labeler.message(text='Расписание на день', state=MenuSG.additional)
 async def menu_day_shedule(message: Message):
+    await state_dispenser.set(message.peer_id, MenuSG.menuDayShedule)
     keyboard = (
         Keyboard()
         .add(Text('Понедельник')).row()
@@ -139,17 +140,28 @@ async def menu_day_shedule(message: Message):
         'Какой день?',
         keyboard=keyboard
     )
-    await state_dispenser.set(message.peer_id, MenuSG.menuDayShedule)
 
 
 @labeler.message(text='<day>', state=MenuSG.menuDayShedule)
 async def day_shedule(message: Message, day=None):
     if day.lower() == 'назад':
-        return await menu_shedule_menu(message)
+        await state_dispenser.set(message.peer_id, MenuSG.additional)
+        keyboard = (
+            Keyboard()
+            .add(Text('Расписание на день')).row()
+            .add(Text('Расписание звонков')).row()
+            .add(Text('Цвет недели')).row()
+            .add(Text('Назад'), KeyboardButtonColor.PRIMARY)
+        )
+        await message.answer(
+            'Дополнительно',
+            keyboard=keyboard
+        )
+        return
 
-    userInfo = get_user_info(message.from_id)
+    userInfo = await get_user_info(message.from_id)
 
-    shedule = sheduleDB.get_day_shedule(day, userInfo)
+    shedule = await sheduleDB.get_day_shedule(day, userInfo)
 
     await message.answer(
         (
@@ -160,9 +172,9 @@ async def day_shedule(message: Message, day=None):
 
 @labeler.message(text='Расписание звонков', state=MenuSG.additional)
 async def rings_shedule(message: Message):
-    userInfo = get_user_info(message.from_id)
+    userInfo = await get_user_info(message.from_id)
 
-    rings = sheduleDB.get_rings(userInfo)
+    rings = await sheduleDB.get_rings(userInfo)
 
     await message.answer(
         (

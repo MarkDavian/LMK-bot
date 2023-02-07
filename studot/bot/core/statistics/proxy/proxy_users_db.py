@@ -9,15 +9,15 @@ class CollectorProxy_UsersDB:
     def __init__(self, db: UsersDB) -> None:
         self.db = db
 
-    def create_user(self, userInfo: UserInfo):
-        metrics.collect('new_user', *userInfo.list())
-        return self.db.create_user(userInfo)
+    async def create_user(self, userInfo: UserInfo):
+        await metrics.collect('new_user', *userInfo.list())
+        return await self.db.create_user(userInfo)
 
-    def get_user_info(self, user_id: int):
-        return self.db.get_user_info(user_id)
+    async def get_user_info(self, user_id: int):
+        return await self.db.get_user_info(user_id)
 
-    def update_user(self, userInfo: UserInfo):
-        metrics.collect('update_user', *userInfo.list())
-        return self.db.update_user(userInfo)
+    async def update_user(self, userInfo: UserInfo):
+        await metrics.collect('update_user', *userInfo.list())
+        return await self.db.update_user(userInfo)
 
 usersDB = CollectorProxy_UsersDB(UsersDB())

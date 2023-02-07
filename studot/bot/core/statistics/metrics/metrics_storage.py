@@ -20,13 +20,13 @@ metrics_storage_logger.addHandler(logging.StreamHandler())
 
 
 class IMetricsStorage:
-    def save(self, metric_name: str, *args) -> None:
-        self._save_to_storage(metric_name, *args)
+    async def save(self, metric_name: str, *args) -> None:
+        await self._save_to_storage(metric_name, *args)
 
-    def new_metric(self, metric_name: str) -> None:
-        self._create_new_metric(metric_name)
+    async def new_metric(self, metric_name: str) -> None:
+        await self._create_new_metric(metric_name)
 
-    def _save_to_storage(self, metric_name: str, *args) -> None:
+    async def _save_to_storage(self, metric_name: str, *args) -> None:
         """BaseMetricsStorage childs must to ovveride this method"""
         ...
 
@@ -76,13 +76,13 @@ class CSVMetricsStorage(IMetricsStorage):
             metrics_storage_logger.error('File was not created', exc_info=True)
             raise _StorageFileError(f'Not able to create csv file ({self.filepath})')
 
-    def _save_df(self, df: pd.DataFrame) -> None:
+    async def _save_df(self, df: pd.DataFrame) -> None:
         metrics_storage_logger.info('Saving DataFrame to CSV')
         df.to_csv(self.filepath, mode='a', header=False)
         metrics_storage_logger.info('DataFrame is saved')
 
     @override
-    def _save_to_storage(self, metric_name: str, *args) -> None:
+    async def _save_to_storage(self, metric_name: str, *args) -> None:
         date = datetime.date.today().strftime('%Y-%m-%d')
         time = datetime.datetime.now(settings.tz_info).strftime('%H:%M:%S')
         data = [
@@ -91,7 +91,7 @@ class CSVMetricsStorage(IMetricsStorage):
         metrics_storage_logger.info(f'Got metrics {data}')
 
         df = pd.DataFrame(data, columns=self.heads)
-        self._save_df(df)
+        await self._save_df(df)
 
 
 class TextMetricsStorage(CSVMetricsStorage):

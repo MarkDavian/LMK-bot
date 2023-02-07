@@ -1,3 +1,4 @@
+import asyncio
 from typing import Optional
 import datetime
 import logging
@@ -38,37 +39,37 @@ class DataMaster:
         self.notifier = notifier
         self.time_interval = self.scanner.interval
 
-    def start(self):
+    async def start(self):
         try:
             master_logger.info('Data master started')
             while True:
-                self._scan()
-                self._check()
+                await self._scan()
+                await self._check()
                 master_logger.info(f'Sleeping {self.time_interval}s')
-                time.sleep(self.time_interval)
+                await asyncio.sleep(self.time_interval)
         except Exception as er:
             master_logger.info('Data master stoped in cause of error')
             master_logger.error(er, exc_info=True)
 
-    def _scan(self):
+    async def _scan(self):
         master_logger.info('Scanning site')
-        self.scanner.process()
+        await self.scanner.process()
 
-    def _check(self):
+    async def _check(self):
         master_logger.info('Checking file url')
-        if self.scanner.same_url:
+        if self.scanner.no_url:
+            master_logger.info('No changes found')
+            return
+        elif self.scanner.same_url:
             master_logger.info('Same file url')
-            pass
-        else:
-            try:
-                self._save()
-            except Exception as e:
-                master_logger.error(e, exc_info=True)
-                return
-            date = datetime.date.fromisoformat(self.scanner.date)
-            self._notify(date)
+            return
+        
+        await self._save()
 
-    def _save(self):
+        date = datetime.date.fromisoformat(self.scanner.date)
+        await self._notify(date)
+
+    async def _save(self):
         master_logger.info('Saving changes to DB')
 
         pdfParser = PDFParser(src=self.scanner.result)
@@ -77,8 +78,8 @@ class DataMaster:
             dict_to_parse = pdfParser.extract_dict()
         except Exception as e:
             master_logger.error(e, exc_info=True)
-            self.notifier.alert_admin(f'Проблема с парсом файла -- {e}')
-            self.notifier.alert_admin_file(pdfParser.beauty_csv)
+            await self.notifier.alert_admin(f'Проблема с парсом файла в таблицу -- {e}')
+            await self.notifier.alert_admin_file(pdfParser.beauty_csv)
             return
 
         jsonParser = JSONParser(dict_to_parse=dict_to_parse)
@@ -86,22 +87,26 @@ class DataMaster:
             changeShedule = jsonParser.parse()
         except Exception as e:
             master_logger.error(e, exc_info=True)
-            self.notifier.alert_admin(f'Проблема с парсом файла -- {e}')
-            self.notifier.alert_admin_file(pdfParser.beauty_csv)
+            await self.notifier.alert_admin(f'Проблема с парсом файла из таблицы в json-- {e}')
+            await self.notifier.alert_admin_file(pdfParser.beauty_csv)
             return
 
         with open(File(f'changes_{self.scanner.date}.json'), 'w') as file:
             json.dump(changeShedule, file, ensure_ascii=False, indent=4, sort_keys=True)
         master_logger.info('JSON saved')
 
-        self.db.save_change_shedule(change=changeShedule, date=self.scanner.date)
+        await self.db.save_change_shedule(change=changeShedule, date=self.scanner.date)
         master_logger.info('Document mongo saved')
 
-    def _notify(self, date: Optional[datetime.date] = None):
-        self.notifier.notify_changes(date)
+    async def _notify(self, date: Optional[datetime.date] = None):
+        await self.notifier.notify_changes(date)
+
+
+async def _start_data_master():
+    master_logger.info('Starting data master')
+    master = DataMaster()
+    await master.start()
 
 
 def start_data_master():
-    master_logger.info('Starting data master')
-    master = DataMaster()
-    master.start()
+    asyncio.run(_start_data_master())

@@ -20,25 +20,28 @@ class SiteParser:
     file_url: str
     date: str
 
-    def parse(self, html_text: str):
+    async def parse(self, html_text: str):
         """Find exactly 
         """
         site_parser_logger.info('Getting started to parse html')
         soup = BeautifulSoup(html_text, features="html5lib")
 
-        tags = self._find_all_h2_tags(soup)
-        h2 = self._find_h2(tags)
+        tags = await self._find_all_h2_tags(soup)
+        h2 = await self._find_h2(tags)
+        if not h2:
+            self.no_url = True
+            return
 
         file = h2.find(
             'a'
         ).get('href')
         
         self.file_url = 'http://www.lmk-lipetsk.ru/'+file
-        self.date = self.find_date(h2)
+        self.date = await self.find_date(h2)
         
         site_parser_logger.info('html parsed')
 
-    def find_date(self, h2: Tag) -> str:
+    async def find_date(self, h2: Tag) -> str:
         text = h2.find(
             'a'
         ).find(
@@ -52,7 +55,7 @@ class SiteParser:
 
         return date
 
-    def _find_all_h2_tags(self, soup: BeautifulSoup) -> list:
+    async def _find_all_h2_tags(self, soup: BeautifulSoup) -> list:
         h2_tags = soup.find(
             'div', {'class': 'right-column'}
         ).find(
@@ -62,7 +65,7 @@ class SiteParser:
         )
         return h2_tags
 
-    def _find_h2(self, tags: list) -> str:
+    async def _find_h2(self, tags: list) -> str:
         """Find the needed h2 tag with file url and date
         """
         for h2 in tags:

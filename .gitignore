@@ -1,6 +1,7 @@
 .DS_Store
 venv
 .env
+.server
 __pycache__
 preload_todos.txt
 *.pdf

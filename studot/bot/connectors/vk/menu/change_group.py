@@ -63,18 +63,19 @@ async def group_input(message: Message, group: str):
 async def course_input(message: Message, course: str):
     group = message.state_peer.payload['group']
 
-    userInfo = get_user_info(message.from_id)
+    userInfo = await get_user_info(message.from_id)
     userInfo.course = course
     userInfo.group = group
 
     keyboard = (
         Keyboard()
+        .add(Text('Мой профиль')).row()
         .add(Text('Уведомление о заменах')).row()
         .add(Text('Уведомление о расписании')).row()
         .add(Text('Изменить группу')).row()
         .add(Text('Назад'), KeyboardButtonColor.PRIMARY)
     )
-    usersDB.update_user(userInfo)
+    await usersDB.update_user(userInfo)
     await message.answer(
         f"Успешно! Теперь ты из {userInfo.group}, {userInfo.course} курса",
         keyboard=keyboard

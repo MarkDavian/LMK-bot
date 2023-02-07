@@ -56,17 +56,24 @@ async def course_input(message: types.Message, state: FSMContext):
     data = await state.get_data()
     group = data['group']
 
-    userInfo = get_user_info(message.from_user.id)
+    userInfo = await get_user_info(message.from_user.id)
     userInfo.course = course
     userInfo.group = group
 
-    usersDB.update_user(userInfo)
+    await usersDB.update_user(userInfo)
+
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    keyboard.add(types.KeyboardButton('Мой профиль'))
+    keyboard.add(types.KeyboardButton('Уведомление о заменах'))
+    keyboard.add(types.KeyboardButton('Уведомление о расписании'))
+    keyboard.add(types.KeyboardButton('Изменить группу'))
+    keyboard.add(types.KeyboardButton('Назад'))
     await message.answer(
         f"Успешно!\nТеперь ты из {userInfo.group}, {userInfo.course} курса",
-        reply_markup=types.ReplyKeyboardRemove()
+        reply_markup=keyboard
     )
 
-    await state.finish()
+    await state.set_state(MenuSG.start.state)
 
 
 def register_group_menu(dp: Dispatcher):

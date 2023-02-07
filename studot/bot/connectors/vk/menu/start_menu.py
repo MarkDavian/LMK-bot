@@ -8,8 +8,8 @@ from bot.core.statistics.proxy.proxy_users_db import usersDB
 from bot.core.utils.types.userinfo import UserInfo
 
 
-def get_user_info(user_id: int) -> UserInfo:
-    userInfo = usersDB.get_user_info(user_id)
+async def get_user_info(user_id: int) -> UserInfo:
+    userInfo = await usersDB.get_user_info(user_id)
 
     return userInfo
 

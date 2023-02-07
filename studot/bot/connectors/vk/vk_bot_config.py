@@ -10,7 +10,7 @@ class MongoStateDispenser(ABCStateDispenser):
         self.db = database['vk_states']
 
     async def get(self, peer_id: int):
-        r = self.db.find_one(
+        r = await self.db.find_one(
             {'peer_id': peer_id}
         )
         if r is None:
@@ -20,21 +20,21 @@ class MongoStateDispenser(ABCStateDispenser):
 
     async def set(self, peer_id: int, state, **payload):
         peer = StatePeer(peer_id=peer_id, state=state, payload=payload)
-        r = self.db.find_one(
+        r = await self.db.find_one(
             {'peer_id': peer_id}
         )
         if r is None:
-            self.db.insert_one(
+            await self.db.insert_one(
                 peer.dict()
             )
         else:
-            self.db.update_one(
+            await self.db.update_one(
                 {'peer_id': peer_id},
                 {'$set': {**peer.dict()}}
             )
 
     async def delete(self, peer_id: int):
-        self.db.delete_one(
+        await self.db.delete_one(
             {'peer_id': peer_id}
         )
 

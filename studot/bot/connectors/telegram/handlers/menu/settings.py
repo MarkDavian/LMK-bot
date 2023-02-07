@@ -34,7 +34,7 @@ async def get_button_text(userInfo: UserInfo, type):
 
 async def notify_changes(message: types.Message, state: FSMContext):
     await state.set_state(MenuSG.settings_changes.state)
-    userInfo = get_user_info(message.from_user.id)
+    userInfo = await get_user_info(message.from_user.id)
 
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     button_text = await get_button_text(userInfo, 'changes')
@@ -48,9 +48,9 @@ async def notify_changes(message: types.Message, state: FSMContext):
 
 
 async def notify_changes_enable(message: types.Message, state: FSMContext):
-    userInfo = get_user_info(message.from_user.id)
+    userInfo = await get_user_info(message.from_user.id)
     userInfo.changes_notify = True
-    usersDB.update_user(userInfo)
+    await usersDB.update_user(userInfo)
 
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     button_text = await get_button_text(userInfo, 'changes')
@@ -64,9 +64,9 @@ async def notify_changes_enable(message: types.Message, state: FSMContext):
 
 
 async def notify_changes_disable(message: types.Message, state: FSMContext):
-    userInfo = get_user_info(message.from_user.id)
+    userInfo = await get_user_info(message.from_user.id)
     userInfo.changes_notify = False
-    usersDB.update_user(userInfo)
+    await usersDB.update_user(userInfo)
 
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     button_text = await get_button_text(userInfo, 'changes')
@@ -81,7 +81,7 @@ async def notify_changes_disable(message: types.Message, state: FSMContext):
 
 async def notify_shedule(message: types.Message, state: FSMContext):
     await state.set_state(MenuSG.settings_shedule.state)
-    userInfo = get_user_info(message.from_user.id)
+    userInfo = await get_user_info(message.from_user.id)
 
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     button_text = await get_button_text(userInfo, 'shedule')
@@ -95,9 +95,9 @@ async def notify_shedule(message: types.Message, state: FSMContext):
 
 
 async def notify_shedule_enable(message: types.Message, state: FSMContext):
-    userInfo = get_user_info(message.from_user.id)
+    userInfo = await get_user_info(message.from_user.id)
     userInfo.shedule_notify = True
-    usersDB.update_user(userInfo)
+    await usersDB.update_user(userInfo)
 
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     button_text = await get_button_text(userInfo, 'shedule')
@@ -111,9 +111,9 @@ async def notify_shedule_enable(message: types.Message, state: FSMContext):
 
 
 async def notify_shedule_disable(message: types.Message, state: FSMContext):
-    userInfo = get_user_info(message.from_user.id)
+    userInfo = await get_user_info(message.from_user.id)
     userInfo.shedule_notify = False
-    usersDB.update_user(userInfo)
+    await usersDB.update_user(userInfo)
 
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     button_text = await get_button_text(userInfo, 'shedule')

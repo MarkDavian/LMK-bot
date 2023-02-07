@@ -41,8 +41,8 @@ async def menu_get_change_shedule(message: types.Message, state: FSMContext):
 
 
 async def menu_get_this_week(message: types.Message, state: FSMContext):
-    userInfo = get_user_info(message.from_user.id)
-    shedule = sheduleDB.get_week_shedule(userInfo)
+    userInfo = await get_user_info(message.from_user.id)
+    shedule = await sheduleDB.get_week_shedule(userInfo)
 
     await message.answer(
         repr(shedule)
@@ -50,8 +50,8 @@ async def menu_get_this_week(message: types.Message, state: FSMContext):
 
 
 async def menu_get_next_week(message: types.Message, state: FSMContext):
-    userInfo = get_user_info(message.from_user.id)
-    shedule = sheduleDB.get_next_week_shedule(userInfo)
+    userInfo = await get_user_info(message.from_user.id)
+    shedule = await sheduleDB.get_next_week_shedule(userInfo)
     
     await message.answer(
         repr(shedule)
@@ -59,8 +59,8 @@ async def menu_get_next_week(message: types.Message, state: FSMContext):
 
 
 async def menu_week_color(message: types.Message, state: FSMContext):
-    userInfo = get_user_info(message.from_user.id)
-    color = sheduleDB.get_week_color(userInfo)
+    userInfo = await get_user_info(message.from_user.id)
+    color = await sheduleDB.get_week_color(userInfo)
 
     await message.answer(color)
 
@@ -83,9 +83,9 @@ async def menu_day_shedule(message: types.Message, state: FSMContext):
 
 
 async def day_shedule(message: types.Message, state: FSMContext):
-    userInfo = get_user_info(message.from_user.id)
+    userInfo = await get_user_info(message.from_user.id)
     day = message.text
-    shedule = sheduleDB.get_day_shedule(day, userInfo)
+    shedule = await sheduleDB.get_day_shedule(day, userInfo)
 
     await message.answer(
         (
@@ -96,9 +96,9 @@ async def day_shedule(message: types.Message, state: FSMContext):
 
 
 async def rings_shedule(message: types.Message, state: FSMContext):
-    userInfo = get_user_info(message.from_user.id)
+    userInfo = await get_user_info(message.from_user.id)
 
-    rings = sheduleDB.get_rings(userInfo)
+    rings = await sheduleDB.get_rings(userInfo)
 
     await message.answer(
         (

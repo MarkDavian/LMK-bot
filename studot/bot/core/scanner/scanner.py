@@ -26,32 +26,26 @@ class Scanner:
         scanner_logger.info('Done')
         self.url = 'http://www.lmk-lipetsk.ru/main_razdel/shedule/index.php'
 
-    def get_file_url(self):
-        self._process_site()
+    async def get_file_url(self):
+        await self._process_site()
 
         return self.result
 
-    def process(self):
-        self._process_site()
+    async def process(self):
+        await self._process_site()
 
-    def parse_site(self):
-        r = requests.get(self.url)
-        html = r.text
-
-        parser = SiteParser()
-        parser.parse(html)
-
-        self.result = parser.file_url
-        self.date = parser.date
-
-    def _process_site(self):
+    async def _process_site(self):
         scanner_logger.info('Start processing site. Getting html')
         r = requests.get(self.url)
         html = r.text
 
         scanner_logger.info('Start parsing html')
         parser = SiteParser()
-        parser.parse(html)
+        await parser.parse(html)
+        if parser.no_url:
+            self.no_url = True
+            return
+        
         self.date = parser.date
 
         scanner_logger.info('Done')

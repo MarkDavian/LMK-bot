@@ -1,7 +1,8 @@
 from typing import Optional
 import logging
 import datetime
-from time import sleep
+import asyncio
+from asyncio import sleep
 
 import telebot
 import vkbottle
@@ -33,15 +34,14 @@ class Notifier:
         self.users_db = usersDB
         notifier_logger.info('Notifier is ready')
 
-    def alert_admin(self, error):
+    async def alert_admin(self, error):
         self.tg_bot.send_message(settings.admin_id, error)
 
-    def alert_admin_file(self, filename: str):
-        file = open(filename, 'rb')
-        self.tg_bot.send_document(settings.admin_id, file)
-        file.close()
+    async def alert_admin_file(self, filename: str):
+        with open(filename, 'rb') as file:
+            self.tg_bot.send_document(settings.admin_id, file)
 
-    def notify_changes(self, date: Optional[datetime.date] = None):
+    async def notify_changes(self, date: Optional[datetime.date] = None):
         notifier_logger.info('Start to notify changes')
 
         if date is None:
@@ -50,17 +50,17 @@ class Notifier:
 
         date_str = date.strftime('%Y-%m-%d')
 
-        users = self.users_db.get_users(filter={'changes_notify': True})
+        users = await self.users_db.get_users(filter={'changes_notify': True})
 
-        metrics.gauge('users_with_changes_notify', len(users))
+        await metrics.gauge('users_with_changes_notify', len(users))
 
         for userInfo in users:
-            changes = sheduleDB.get_change_shedule(date, userInfo)
-            self._notify_user_changes(userInfo, changes, f'Появились новые замены ({date_str}):\n')
+            changes = await sheduleDB.get_change_shedule(date, userInfo)
+            await self._notify_user_changes(userInfo, changes, f'Появились новые замены ({date_str}):\n')
 
         notifier_logger.info('Notifing is done')
 
-    def notify_shedule(self, date: Optional[datetime.date] = None):
+    async def notify_shedule(self, date: Optional[datetime.date] = None):
         notifier_logger.info('Start notifing shedule')
 
         if date is None:
@@ -69,17 +69,17 @@ class Notifier:
 
         day = SHEDULE_DAY.WEEKDAYS[date.weekday()]
 
-        users = self.users_db.get_users(filter={'shedule_notify': True})
+        users = await self.users_db.get_users(filter={'shedule_notify': True})
 
-        metrics.gauge('users_with_shedule_notify', len(users))
+        await metrics.gauge('users_with_shedule_notify', len(users))
 
         for userInfo in users:
-            shedule = sheduleDB.get_day_shedule(day, userInfo)
-            self._notify_user_changes(userInfo, shedule, f'Расписание на {day}:\n')
+            shedule = await sheduleDB.get_day_shedule(day, userInfo)
+            await self._notify_user_changes(userInfo, shedule, f'Расписание на {day}:\n')
 
         notifier_logger.info('Notifing is done')
 
-    def _notify_user_changes(self, userInfo: UserInfo, shedule: DayShedule, text: str) -> None:
+    async def _notify_user_changes(self, userInfo: UserInfo, shedule: DayShedule, text: str) -> None:
         if userInfo.social == 'telegram':
             self.tg_bot.send_message(
                 userInfo.userID, 
@@ -89,29 +89,31 @@ class Notifier:
                 )
             )
         elif userInfo.social == 'vk':
-            import asyncio
-            asyncio.run(
-                self.vk_bot.api.messages.send(
-                    user_id=userInfo.userID, 
-                    message=(
-                        text
-                        +repr(shedule)
-                    ),
-                    random_id=0
-                )
+            await self.vk_bot.api.messages.send(
+                user_id=userInfo.userID, 
+                message=(
+                    text
+                    +repr(shedule)
+                ),
+                random_id=0
             )
 
-    def start(self):
+    async def start(self):
         while True:
             date = datetime.datetime.now()
             if date.weekday() != 5:
                 if date.strftime("%H:%M") == '18:30':
-                    self.notify_shedule()
-            sleep(60)
+                    await self.notify_shedule()
+            await sleep(60)
 
 
 notifier = Notifier()
 
-def start_notifier():
+
+async def _start_notifier():
     notifier_b = Notifier()
-    notifier_b.start()
+    await notifier_b.start()
+
+
+def start_notifier():
+    asyncio.run(_start_notifier())

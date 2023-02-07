@@ -13,39 +13,39 @@ class CollectorProxy_SheduleDB:
     def __init__(self, shedDB: SheduleDB) -> None:
         self.db = shedDB
 
-    def get_week_shedule(self, userInfo: UserInfo) -> WeekShedule:
-        metrics.collect('get_week_shedule', *userInfo.list())
-        return self.db.get_week_shedule(userInfo)
+    async def get_week_shedule(self, userInfo: UserInfo) -> WeekShedule:
+        await metrics.collect('get_week_shedule', *userInfo.list())
+        return await self.db.get_week_shedule(userInfo)
 
-    def get_next_week_shedule(self, userInfo: UserInfo) -> WeekShedule:
-        metrics.collect('get_week_shedule', *userInfo.list())
-        return self.db.get_next_week_shedule(userInfo)
+    async def get_next_week_shedule(self, userInfo: UserInfo) -> WeekShedule:
+        await metrics.collect('get_week_shedule', *userInfo.list())
+        return await self.db.get_next_week_shedule(userInfo)
 
-    def save_shedule(self, placeShedule: dict, place: str, weekType: Literal[0, 1]) -> None:
-        return self.db.save_shedule(placeShedule, place, weekType)
+    async def save_shedule(self, placeShedule: dict, place: str, weekType: Literal[0, 1]) -> None:
+        return await self.db.save_shedule(placeShedule, place, weekType)
 
-    def get_day_shedule(self, day: str, userInfo: UserInfo) -> DayShedule:
-        metrics.collect('get_day_shedule', *userInfo.list())
-        return self.db.get_day_shedule(day, userInfo)
+    async def get_day_shedule(self, day: str, userInfo: UserInfo) -> DayShedule:
+        await metrics.collect('get_day_shedule', *userInfo.list())
+        return await self.db.get_day_shedule(day, userInfo)
 
-    def get_change_shedule(self, date: datetime.date, userInfo: UserInfo) -> DayShedule:
-        metrics.collect('get_change_shedule', *userInfo.list())
-        return self.db.get_change_shedule(date, userInfo)
+    async def get_change_shedule(self, date: datetime.date, userInfo: UserInfo) -> DayShedule:
+        await metrics.collect('get_change_shedule', *userInfo.list())
+        return await self.db.get_change_shedule(date, userInfo)
     
-    def get_combined_shedule(self, userInfo: UserInfo) -> DayShedule:
-        metrics.collect('get_combined_shedule', *userInfo.list())
-        return self.db.get_combined_shedule(userInfo)
+    async def get_combined_shedule(self, userInfo: UserInfo) -> DayShedule:
+        await metrics.collect('get_combined_shedule', *userInfo.list())
+        return await self.db.get_combined_shedule(userInfo)
     
-    def get_rings(self, userInfo: UserInfo):
-        metrics.collect('get_rings', *userInfo.list())
-        return self.db.get_rings()
+    async def get_rings(self, userInfo: UserInfo):
+        await metrics.collect('get_rings', *userInfo.list())
+        return await self.db.get_rings()
 
-    def get_week_color(self, userInfo: UserInfo) -> str:
-        metrics.collect('get_week_color', *userInfo.list())
-        return self.db.get_week_color()
+    async def get_week_color(self, userInfo: UserInfo) -> str:
+        await metrics.collect('get_week_color', *userInfo.list())
+        return await self.db.get_week_color()
 
-    def save_change_shedule(self, change: dict, date: str):
-        return self.db.save_change_shedule(change, date)
+    async def save_change_shedule(self, change: dict, date: str):
+        return await self.db.save_change_shedule(change, date)
 
 
 sheduleDB = CollectorProxy_SheduleDB(SheduleDB())

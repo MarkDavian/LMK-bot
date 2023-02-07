@@ -47,7 +47,7 @@ async def get_button_text(userInfo: UserInfo, type):
 @labeler.message(text='Уведомление о заменах', state=MenuSG.start)
 async def notify_changes(message: Message):
     await state_dispenser.set(message.peer_id, MenuSG.settings_changes)
-    userInfo = get_user_info(message.from_id)
+    userInfo = await get_user_info(message.from_id)
 
     keyboard = (
         Keyboard()
@@ -63,9 +63,9 @@ async def notify_changes(message: Message):
 
 @labeler.message(text='включить', state=MenuSG.settings_changes)
 async def notify_changes_enable(message: Message):
-    userInfo = get_user_info(message.from_id)
+    userInfo = await get_user_info(message.from_id)
     userInfo.changes_notify = True
-    usersDB.update_user(userInfo)
+    await usersDB.update_user(userInfo)
     
     keyboard = (
         Keyboard()
@@ -80,9 +80,9 @@ async def notify_changes_enable(message: Message):
 
 @labeler.message(text='выключить', state=MenuSG.settings_changes)
 async def notify_changes_disable(message: Message):
-    userInfo = get_user_info(message.from_id)
+    userInfo = await get_user_info(message.from_id)
     userInfo.changes_notify = False
-    usersDB.update_user(userInfo)
+    await usersDB.update_user(userInfo)
 
     keyboard = (
         Keyboard()
@@ -99,7 +99,7 @@ async def notify_changes_disable(message: Message):
 @labeler.message(text='Уведомление о расписании', state=MenuSG.start)
 async def notify_shedule(message: Message):
     await state_dispenser.set(message.peer_id, MenuSG.settings_shedule)
-    userInfo = get_user_info(message.from_id)
+    userInfo = await get_user_info(message.from_id)
 
     keyboard = (
         Keyboard()
@@ -115,9 +115,9 @@ async def notify_shedule(message: Message):
 
 @labeler.message(text='включить', state=MenuSG.settings_shedule)
 async def notify_shedule_enable(message: Message):
-    userInfo = get_user_info(message.from_id)
+    userInfo = await get_user_info(message.from_id)
     userInfo.shedule_notify = True
-    usersDB.update_user(userInfo)
+    await usersDB.update_user(userInfo)
 
     keyboard = (
         Keyboard()
@@ -133,9 +133,9 @@ async def notify_shedule_enable(message: Message):
 
 @labeler.message(text='выключить', state=MenuSG.settings_shedule)
 async def notify_shedule_disable(message: Message):
-    userInfo = get_user_info(message.from_id)
+    userInfo = await get_user_info(message.from_id)
     userInfo.shedule_notify = False
-    usersDB.update_user(userInfo)
+    await usersDB.update_user(userInfo)
 
     keyboard = (
         Keyboard()

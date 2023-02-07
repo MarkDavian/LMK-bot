@@ -15,7 +15,7 @@ services:
     ports:
       - "0.0.0.0:80:1905"
     links:
-      - mongodb:mongo
+      - mongodb:mongodb
 
   prometheus:
     image: prometheus
@@ -35,6 +35,8 @@ services:
 
   mongodb:
     image: mongo:4.4.7-focal
+    environment:
+      - name=value
     volumes:
       - mongo:/data/db
 

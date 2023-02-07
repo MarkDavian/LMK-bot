@@ -13,8 +13,8 @@ from bot.core.statistics.proxy.proxy_users_db import usersDB
 from bot.core.utils.types.userinfo import UserInfo
 
 
-def get_user_info(user_id: int) -> UserInfo:
-    userInfo = usersDB.get_user_info(user_id)
+async def get_user_info(user_id: int) -> UserInfo:
+    userInfo = await usersDB.get_user_info(user_id)
 
     return userInfo
 
@@ -78,12 +78,12 @@ async def process_file(filepath, message: types.Message, state: FSMContext):
         await message.bot.send_document(settings.admin_id, file)
 
     await save_to_db(changes, date)
-    notifier.notify_changes()
+    await notifier.notify_changes()
 
 
 async def save_to_db(changes: dict, date: str):
     from bot.core.utils.db.shedule import sheduleDB
-    sheduleDB.save_change_shedule(changes, date)
+    await sheduleDB.save_change_shedule(changes, date)
 
 
 async def cmd_get_metrcis_csv(message: types.Message, state: FSMContext):

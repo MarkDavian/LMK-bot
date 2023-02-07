@@ -8,8 +8,8 @@ from bot.core.statistics.proxy.proxy_users_db import usersDB
 from bot.core.utils.types.userinfo import UserInfo
 
 
-def get_user_info(user_id: int) -> UserInfo:
-    userInfo = usersDB.get_user_info(user_id)
+async def get_user_info(user_id: int) -> UserInfo:
+    userInfo = await usersDB.get_user_info(user_id)
 
     return userInfo
 
@@ -22,7 +22,7 @@ class RegistrationSG(StatesGroup):
 
 async def cmd_start(message: types.Message, state: FSMContext):
     await state.finish()
-    userInfo = get_user_info(message.from_user.id)
+    userInfo = await get_user_info(message.from_user.id)
     
     if userInfo is not None:
         await message.answer(
@@ -65,7 +65,7 @@ async def course_input(message: types.Message, state: FSMContext):
         group=group,
         place='ЛМК'
     )
-    usersDB.create_user(userInfo)
+    await usersDB.create_user(userInfo)
     await message.answer(
         "Успешно зарегистрировал тебя! Теперь ты можешь воспользоваться /menu )",
         reply_markup=types.ReplyKeyboardRemove()

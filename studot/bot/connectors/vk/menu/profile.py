@@ -8,7 +8,7 @@ from bot.connectors.vk.menu.start_menu import MenuSG, get_user_info
 from bot.core.statistics.proxy.proxy_users_db import usersDB
 
 
-def get_bool_str(b: bool) -> str:
+async def get_bool_str(b: bool) -> str:
     if b:
         return 'Вкл.'
     return 'Выкл.'
@@ -18,10 +18,10 @@ def get_bool_str(b: bool) -> str:
 async def menu_start(message: Message):
     await state_dispenser.set(message.peer_id, MenuSG.profile)
 
-    userInfo = get_user_info(message.from_id)
+    userInfo = await get_user_info(message.from_id)
 
-    ch_ntf = get_bool_str(userInfo.changes_notify)
-    shed_ntf = get_bool_str(userInfo.shedule_notify)
+    ch_ntf = await get_bool_str(userInfo.changes_notify)
+    shed_ntf = await get_bool_str(userInfo.shedule_notify)
 
     keyboard = (
         Keyboard()

@@ -11,8 +11,8 @@ from bot.core.statistics.proxy.proxy_users_db import usersDB
 from bot.core.utils.types.userinfo import UserInfo
 
 
-def get_user_info(user_id: int) -> UserInfo:
-    userInfo = usersDB.get_user_info(user_id)
+async def get_user_info(user_id: int) -> UserInfo:
+    userInfo = await usersDB.get_user_info(user_id)
 
     return userInfo
 
@@ -29,7 +29,7 @@ async def cmd_start(message: Message):
     if peer := await state_dispenser.get(message.peer_id):
         await state_dispenser.delete(peer.peer_id)
 
-    userInfo = get_user_info(message.from_id)
+    userInfo = await get_user_info(message.from_id)
     
     if userInfo is not None:
         return
@@ -71,7 +71,7 @@ async def course_input(message: Message, course: str):
         group=group,
         place='ЛМК'
     )
-    usersDB.create_user(userInfo)
+    await usersDB.create_user(userInfo)
 
     keyboard = (
         Keyboard()

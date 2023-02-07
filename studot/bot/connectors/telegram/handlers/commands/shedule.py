@@ -8,20 +8,20 @@ from bot.core.statistics.proxy.proxy_users_db import usersDB
 from bot.core.statistics.proxy.proxy_shedule_db import sheduleDB
 
 
-def get_userinfo(user_id: int) -> UserInfo:
-    userInfo = usersDB.get_user_info(user_id)
+async def get_userinfo(user_id: int) -> UserInfo:
+    userInfo = await usersDB.get_user_info(user_id)
 
     return userInfo
 
 
 async def cmd_get_shedule_today(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
-    userInfo = get_userinfo(user_id)
+    userInfo = await get_userinfo(user_id)
 
     day = datetime.date.today().weekday()
     today = SHEDULE_DAY.WEEKDAYS[day]
 
-    dayShedule = sheduleDB.get_day_shedule(today, userInfo)
+    dayShedule = await sheduleDB.get_day_shedule(today, userInfo)
 
     await message.answer(
         (
@@ -33,12 +33,12 @@ async def cmd_get_shedule_today(message: types.Message, state: FSMContext):
 
 async def cmd_get_shedule_tomorrow(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
-    userInfo = get_userinfo(user_id)
+    userInfo = await get_userinfo(user_id)
 
     day = datetime.date.today().weekday()
     today = SHEDULE_DAY.WEEKDAYS[day+1]
 
-    dayShedule = sheduleDB.get_day_shedule(today, userInfo)
+    dayShedule = await sheduleDB.get_day_shedule(today, userInfo)
 
     await message.answer(
         (
@@ -50,11 +50,11 @@ async def cmd_get_shedule_tomorrow(message: types.Message, state: FSMContext):
 
 async def cmd_get_change_shedule(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
-    userInfo = get_userinfo(user_id)
+    userInfo = await get_userinfo(user_id)
 
     now_date = datetime.date.today()
     change_date = now_date+datetime.timedelta(days=1)
-    dayShedule = sheduleDB.get_change_shedule(change_date, userInfo)
+    dayShedule = await sheduleDB.get_change_shedule(change_date, userInfo)
 
     text = 'Замен нет'
     if dayShedule is not None:
@@ -73,9 +73,9 @@ async def cmd_get_change_shedule(message: types.Message, state: FSMContext):
 async def get_shedule_day(message: types.Message, state: FSMContext):
     day = ''
     user_id = message.from_user.id
-    userInfo = get_userinfo(user_id)
+    userInfo = await get_userinfo(user_id)
 
-    dayShedule = sheduleDB.get_day_shedule(day, userInfo)
+    dayShedule = await sheduleDB.get_day_shedule(day, userInfo)
 
     await message.answer(
         (
@@ -87,9 +87,9 @@ async def get_shedule_day(message: types.Message, state: FSMContext):
 
 async def cmd_get_week_shedule(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
-    userInfo = get_userinfo(user_id)
+    userInfo = await get_userinfo(user_id)
 
-    weekShedule = sheduleDB.get_week_shedule(userInfo)
+    weekShedule = await sheduleDB.get_week_shedule(userInfo)
 
     await message.answer(
         (

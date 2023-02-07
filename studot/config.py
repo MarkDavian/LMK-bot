@@ -47,8 +47,10 @@ class Settings(BaseSettings):
     admin_id: int
 
     mongo_host: str
-
+    telegram_mongo_host: str
     mongo_port: int
+    mongo_user: str
+    mongo_pass: str
 
     server_url: str
     tz_info = timezone(timedelta(hours=_TZ_OFFSET), name=_TZ_NAME) 
