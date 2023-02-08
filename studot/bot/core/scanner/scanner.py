@@ -42,6 +42,7 @@ class Scanner:
         scanner_logger.info('Start parsing html')
         parser = SiteParser()
         await parser.parse(html)
+        self.no_url = False
         if parser.no_url:
             self.no_url = True
             return
