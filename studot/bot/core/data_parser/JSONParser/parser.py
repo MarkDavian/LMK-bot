@@ -31,7 +31,6 @@ class JSONParser:
 
         for course, shedule in doc['Курс'].items():
             for group_name, shed in shedule.items():
-                group_name = group_name.capitalize()
                 for key, subject in sorted(shed.items()):
                     time = SHEDULE_TIME.SUBJECTS[int(key[-1])-1]
                     if isinstance(subject, float):

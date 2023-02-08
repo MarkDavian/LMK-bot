@@ -82,7 +82,7 @@ class CSVParser:
         else:
             if group:
                 self._clear_current()
-                self.current_group_name = group_field
+                self.current_group_name = group_field.upper()
             if isinstance(sub_num, str):
                 self._update_current_group(str(sub_num), change)
             else:
