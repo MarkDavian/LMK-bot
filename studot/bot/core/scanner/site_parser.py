@@ -28,6 +28,7 @@ class SiteParser:
 
         tags = await self._find_all_h2_tags(soup)
         h2 = await self._find_h2(tags)
+        self.no_url = False
         if not h2:
             self.no_url = True
             return
