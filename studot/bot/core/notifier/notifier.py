@@ -102,7 +102,7 @@ class Notifier:
         while True:
             date = datetime.datetime.now()
             if date.weekday() != 5:
-                if date.strftime("%H:%M") == '18:30':
+                if date.strftime("%H:%M") == '18:00':
                     await self.notify_shedule()
             await sleep(60)
 
