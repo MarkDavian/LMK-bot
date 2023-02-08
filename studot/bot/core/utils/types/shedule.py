@@ -140,7 +140,7 @@ class DayShedule(IShedule):
     def __repr__(self) -> str:
         re = ''
         for c, subject in enumerate(self._subjects):
-            re += f'{self.keys[c]}: {subject.name} ({subject.time[0]}-{subject.time[1]})\n'
+            re += f'{self.keys[c]}: {subject.name}\n({subject.time[0]}-{subject.time[1]})\n'
         return re
 
 
