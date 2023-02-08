@@ -62,7 +62,7 @@ async def group_input(message: Message, group: str):
 
 @labeler.message(text='<course>', state=RegistrationSG.courseInput)
 async def course_input(message: Message, course: str):
-    group = message.state_peer.payload['group']
+    group = message.state_peer.payload['group'].capitalize()
 
     userInfo = UserInfo(
         userID=message.from_id,

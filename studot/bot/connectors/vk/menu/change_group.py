@@ -61,7 +61,7 @@ async def group_input(message: Message, group: str):
 
 @labeler.message(text='<course>', state=MenuSG.menuCourseInput)
 async def course_input(message: Message, course: str):
-    group = message.state_peer.payload['group']
+    group = message.state_peer.payload['group'].capitalize()
 
     userInfo = await get_user_info(message.from_id)
     userInfo.course = course

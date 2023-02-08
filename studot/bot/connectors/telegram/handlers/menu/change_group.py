@@ -54,7 +54,7 @@ async def group_input(message: types.Message, state: FSMContext):
 async def course_input(message: types.Message, state: FSMContext):
     course = message.text
     data = await state.get_data()
-    group = data['group']
+    group = data['group'].capitalize()
 
     userInfo = await get_user_info(message.from_user.id)
     userInfo.course = course
