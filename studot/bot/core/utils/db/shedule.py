@@ -3,7 +3,6 @@ import logging
 
 from typing import Literal, Union
 
-# import pymongo
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from config import settings
@@ -143,23 +142,36 @@ class SheduleDB:
 
         return weekShedule
 
+    async def _get_shedule_for_user(self, doc: dict, userInfo: UserInfo) -> dict:
+        course_shedule = doc['Курс'].get(userInfo.course, None)
+        if course_shedule is None:
+            return f'Нет расписания для твоего курса ({userInfo.course})'
+        
+        group_shedule = course_shedule.get(userInfo.group, None)
+        if group_shedule is None:
+            return f'Нет расписания для твоей группы ({userInfo.group})'
+
+        return group_shedule
+
     async def get_day_shedule(self, day: str, userInfo: UserInfo) -> DayShedule:
         shedule_db_logger.info('Getting day shedule')
 
         shedule_collection = await self._get_shedule_collection()
 
         doc = await shedule_collection.find_one(
-            {
-                'Место': userInfo.place
-            }
+            {'Место': userInfo.place}
         )
-        day_shed = doc['Курс'][userInfo.course][userInfo.group].get(day, None)
-        if day_shed is None:
+        group_shedule = await self._get_shedule_for_user(doc, userInfo)
+        if isinstance(group_shedule, str):
+            return group_shedule
+
+        day_shedule = group_shedule.get(day, None)
+        if day_shedule is None:
             day = 'Понедельник'
-            day_shed = doc['Курс'][userInfo.course][userInfo.group].get(day, None)
+            day_shedule = group_shedule.get(day, None)
 
         shedule_dict = {
-            day: day_shed
+            day: day_shedule
         }
         dayShedule = DaySheduleFactory(shedule_dict).get()
 
@@ -176,6 +188,7 @@ class SheduleDB:
             # Sunday to Monday
             f_date += datetime.timedelta(days=1)
 
+        # Find change shedule tomorrow
         doc = await self._change_shedule.find_one(
             {
                 "Место": userInfo.place,
@@ -183,29 +196,33 @@ class SheduleDB:
 
             }
         )
+        # If no change to tomorrow find today
         if not doc:
             today = datetime.date.today()
+            change_date = f_date
             f_date = today
             doc = await self._change_shedule.find_one(
-            {
-                "Место": userInfo.place,
-                "Дата": today.strftime('%Y-%m-%d')
-
-            }
-        )
-        shedule = doc["Курс"].get(userInfo.course, None)
-        if shedule is None:
+                {
+                    "Место": userInfo.place,
+                    "Дата": today.strftime('%Y-%m-%d')
+                }
+            )
+        try:
+            course_shedule = doc["Курс"].get(userInfo.course, None)
+        except TypeError:
+            return f'Нет замен ни на {change_date.strftime("%m-%d")}, ни на {today.strftime("%m-%d")}'
+        
+        if course_shedule is None:
             return f'В заменах твоего курса ({userInfo.course}) нет'
-        shedule = shedule.get(userInfo.group, None)
-        if shedule is None:
+        
+        group_shedule = course_shedule.get(userInfo.group, None)
+        if group_shedule is None:
             return f'В заменах твоей группы ({userInfo.group}) нет'
 
         day = SHEDULE_DAY.WEEKDAYS[f_date.weekday()]
-
         shedule = {
-            day: shedule
+            day: group_shedule
         }
-
         dayShedule = DaySheduleFactory(shedule).get()
 
         return dayShedule

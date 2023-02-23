@@ -14,6 +14,7 @@ async def get_bool_str(b: bool) -> str:
     return 'Выкл.'
 
 
+@labeler.message(text='[club218297281|@studotbot] Мой профиль', state=MenuSG.start)
 @labeler.message(text='Мой профиль', state=MenuSG.start)
 async def menu_start(message: Message):
     await state_dispenser.set(message.peer_id, MenuSG.profile)

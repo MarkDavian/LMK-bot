@@ -26,6 +26,6 @@ async def save_message(message: Message) -> None:
     )
 
 
-@labeler.chat_message()
+# @labeler.chat_message()
 async def collect_telemetry(message: Message):
     await save_message(message)

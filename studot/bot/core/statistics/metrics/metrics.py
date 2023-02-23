@@ -1,6 +1,6 @@
 import logging
 
-from prometheus_client import Gauge
+from prometheus_client import Gauge, Counter
 
 from config import settings
 
@@ -31,6 +31,7 @@ class Metrics:
         self.fields = self.settings['fields']
         
         self.gauges = {}
+        self.counters = {}
         self._metrics = {}
 
         metrics_logger.info('Getting storage')
@@ -48,24 +49,18 @@ class Metrics:
         await self.storage.save(metric_name, *args)
 
     async def export(self, metric_name: str, *args) -> None:
-        await self._create_gauge(metric_name, *args)
-        await self._set_gauge_value(metric_name)
+        await self._create_counter(metric_name, *args)
+        self.counters[metric_name].inc()
     
     async def gauge(self, metric_name: str, value: int):
         if self.gauges.get(metric_name) is None:
             self.gauges[metric_name] = Gauge(metric_name, "User Metric")
         self.gauges[metric_name].set(value)
 
-    async def _create_gauge(self, metric_name: str, *args) -> None:
-        if self.gauges.get(metric_name) is None:
-            self.gauges[metric_name] = Gauge(metric_name, "Collectable user stats")
-            self._metrics[metric_name] = 1
-        else:
-            self._metrics[metric_name] += 1
-
-    async def _set_gauge_value(self, metric_name: str) -> None:
-        value = self._metrics[metric_name]
-        self.gauges[metric_name].set(value)
+    async def _create_counter(self, metric_name: str, *args) -> None:
+        if self.counters.get(metric_name) is None:
+            self.counters[metric_name] = Counter(metric_name, "User metric")
+            self.counters[metric_name].inc()
     
 
 

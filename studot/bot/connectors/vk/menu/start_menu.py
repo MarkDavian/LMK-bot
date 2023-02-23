@@ -35,6 +35,7 @@ class MenuSG(BaseStateGroup):
 @labeler.message(lev='меню')
 @labeler.message(text='Меню')
 @labeler.message(text='/menu')
+@labeler.message(text='[club218297281|@studotbot] Назад', state=MenuSG.start)
 @labeler.message(text='Назад', state=MenuSG.start)
 async def menu_start(message: Message):
     keyboard = (
@@ -50,6 +51,7 @@ async def menu_start(message: Message):
     await state_dispenser.set(message.peer_id, MenuSG.start)
 
 
+@labeler.message(text='[club218297281|@studotbot] убрать')
 @labeler.message(text='убрать')
 async def menu_brake(message: Message):
     await message.answer(

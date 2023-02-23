@@ -22,7 +22,13 @@ async def cmd_get_shedule_today(message: types.Message, state: FSMContext):
     today = SHEDULE_DAY.WEEKDAYS[day]
 
     dayShedule = await sheduleDB.get_day_shedule(today, userInfo)
-
+    if isinstance(dayShedule, str):
+        await message.answer(dayShedule)
+        return
+    if dayShedule is None:
+        await message.answer(f'Нет расписания. Проверь название своей группы или курса\nТвоя группа - {userInfo.group}')
+        return
+    
     await message.answer(
         (
             f'Расписание на {dayShedule.name}:\n'+
@@ -39,7 +45,13 @@ async def cmd_get_shedule_tomorrow(message: types.Message, state: FSMContext):
     today = SHEDULE_DAY.WEEKDAYS[day+1]
 
     dayShedule = await sheduleDB.get_day_shedule(today, userInfo)
-
+    if isinstance(dayShedule, str):
+        await message.answer(dayShedule)
+        return
+    if dayShedule is None:
+        await message.answer(f'Нет расписания. Проверь название своей группы или курса\nТвоя группа - {userInfo.group}')
+        return
+    
     await message.answer(
         (
             f'Расписание на {dayShedule.name}:\n'+

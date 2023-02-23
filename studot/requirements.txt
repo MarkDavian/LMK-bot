@@ -18,7 +18,7 @@ beautifulsoup4
 html5lib
 # Telegram
 aiogram
-telebot
+pyTelegramBotAPI
 # VK
 vkbottle
 uvloop

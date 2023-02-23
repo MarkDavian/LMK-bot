@@ -24,6 +24,8 @@ class RegistrationSG(BaseStateGroup):
 
 
 @labeler.message(CommandRule('начать', ['/', '!']))
+@labeler.message(text='начать')
+@labeler.message(text='Начать')
 async def cmd_start(message: Message):
     # Remove user state
     if peer := await state_dispenser.get(message.peer_id):
@@ -54,7 +56,7 @@ async def group_input(message: Message, group: str):
     )
 
     await message.answer(
-        "Отлично, теперь укажи свой курс",
+        "Отлично, теперь укажи свой курс. Он должен быть одной цифрой! От 1 до 4",
         keyboard=keyboard
     )
     await state_dispenser.set(message.peer_id, RegistrationSG.courseInput, group=group)

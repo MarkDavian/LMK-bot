@@ -7,13 +7,14 @@ services:
       context: ./studot/
       dockerfile: ./Dockerfile
     environment:
+      - TZ=Europe/Moscow
       - MONGO_HOST=mongodb://mongodb/
       - MONGO_PORT=27017
     depends_on:
       - mongodb
       - prometheus
-    ports:
-      - "0.0.0.0:80:1905"
+    # ports:
+      # - "0.0.0.0:80:1905"
     links:
       - mongodb:mongodb
 
@@ -32,11 +33,11 @@ services:
       dockerfile: Dockerfile
     ports:
       - 0.0.0.0:3000:3000
+    links:
+      - prometheus:prometheus
 
   mongodb:
     image: mongo:4.4.7-focal
-    environment:
-      - name=value
     volumes:
       - mongo:/data/db
 

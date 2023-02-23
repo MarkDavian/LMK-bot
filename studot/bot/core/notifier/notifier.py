@@ -39,7 +39,7 @@ class Notifier:
 
     async def alert_admin_file(self, filename: str):
         with open(filename, 'rb') as file:
-            self.tg_bot.send_document(settings.admin_id, file)
+            self.tg_bot.send_document(chat_id=settings.admin_id, document=file)
 
     async def notify_changes(self, date: Optional[datetime.date] = None):
         notifier_logger.info('Start to notify changes')
@@ -81,20 +81,48 @@ class Notifier:
 
     async def _notify_user_changes(self, userInfo: UserInfo, shedule: DayShedule, text: str) -> None:
         if userInfo.social == 'telegram':
+            try:
+                self.tg_bot.send_message(
+                    userInfo.userID, 
+                    (
+                        text
+                        +repr(shedule)
+                    )
+                )
+            except:
+                pass
+        elif userInfo.social == 'vk':
+            try:
+                await self.vk_bot.api.messages.send(
+                    user_id=userInfo.userID, 
+                    message=(
+                        text
+                        +repr(shedule)
+                    ),
+                    random_id=0
+                )
+            except:
+                pass
+
+    async def notify_users(self, text: str):
+        users = await self.users_db.get_users(filter={})
+
+        for userInfo in users:
+            try:
+                await self._notify_user_text(userInfo, text)
+            except:
+                pass
+
+    async def _notify_user_text(self, userInfo: UserInfo, text: str) -> None:
+        if userInfo.social == 'telegram':
             self.tg_bot.send_message(
                 userInfo.userID, 
-                (
-                    text
-                    +repr(shedule)
-                )
+                text
             )
         elif userInfo.social == 'vk':
             await self.vk_bot.api.messages.send(
                 user_id=userInfo.userID, 
-                message=(
-                    text
-                    +repr(shedule)
-                ),
+                message=text,
                 random_id=0
             )
 

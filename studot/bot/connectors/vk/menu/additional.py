@@ -6,7 +6,9 @@ from bot.connectors.vk.vk_bot_config import labeler, state_dispenser
 from bot.connectors.vk.menu.start_menu import MenuSG
 
 
+@labeler.message(text='[club218297281|@studotbot] дополнительно', state=MenuSG.start)
 @labeler.message(text='дополнительно', state=MenuSG.start)
+@labeler.message(text='[club218297281|@studotbot]', state=MenuSG.menuDayShedule)
 @labeler.message(text='назад', state=MenuSG.menuDayShedule)
 async def menu_additional(message: Message):
     await state_dispenser.set(message.peer_id, MenuSG.additional)

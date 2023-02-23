@@ -85,6 +85,8 @@ class CSVParser:
                 self.current_group_name = group_field.upper()
             if isinstance(sub_num, str):
                 self._update_current_group(str(sub_num), change)
+            elif isinstance(sub_num, float):
+                self._update_current_group(str(sub_num), change)
             else:
                 self._update_current_group(str(int(sub_num)), change)
 

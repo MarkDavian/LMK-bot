@@ -69,12 +69,12 @@ class SiteParser:
     async def _find_h2(self, tags: list) -> str:
         """Find the needed h2 tag with file url and date
         """
+        h2s = []
         for h2 in tags:
-            a_text: str = h2.find(
-                'a'
-            ).find(
-                'span'
-            ).text
-
-            if 'изменение занятий' in a_text.lower():
-                return h2
+            h2_a_tag = h2.find('a')
+            if h2_a_tag:
+                a_spans = h2_a_tag.find('span')
+                a_span_text = a_spans.text
+                if 'изменение занятий' in a_span_text.lower():
+                    h2s.append(h2)
+        return h2s[-1]

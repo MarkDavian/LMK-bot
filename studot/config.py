@@ -45,6 +45,7 @@ class Settings(BaseSettings):
     bot_api_key: str
     vk_bot_api_key: str
     admin_id: int
+    admins_id = [1631513712, 5653354467]
 
     mongo_host: str
     telegram_mongo_host: str

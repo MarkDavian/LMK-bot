@@ -63,21 +63,9 @@ for group, shed in r.items():
     next[group] = day_dict
 
 
-# with open('next.json', 'w') as file:
+# with open('tmp.json', 'w') as file:
 #     json.dump(r, file, ensure_ascii=False, indent=4)
 
-
-# with open('result.json', 'w') as file:
-#     json.dump(next, file, ensure_ascii=False, indent=4)
-
-
-# with open('result.json', 'r') as var, open("final.json", "w") as file:
-#     for line in var:
-#         line = line.rstrip()
-#         file.write(line)
-
-# with open('final.json', 'r') as file:
-#     r = json.load(file)
 
 with open('final.json', "w") as file:
     json.dump(next, file, ensure_ascii=False, indent=4)

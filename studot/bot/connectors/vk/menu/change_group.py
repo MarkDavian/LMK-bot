@@ -10,6 +10,7 @@ from bot.core.statistics.proxy.proxy_users_db import usersDB
 from bot.core.utils.types.userinfo import UserInfo
 
 
+@labeler.message(text='[club218297281|@studotbot] Изменить группу', state=MenuSG.start)
 @labeler.message(text='Изменить группу', state=MenuSG.start)
 async def menu_change_group(message: Message):
     await state_dispenser.set(message.peer_id, MenuSG.changeGroup)
@@ -26,6 +27,7 @@ async def menu_change_group(message: Message):
     )
 
 
+@labeler.message(text='[club218297281|@studotbot] <answer>', state=MenuSG.changeGroup)
 @labeler.message(text='<answer>', state=MenuSG.changeGroup)
 async def check_answer(message: Message, answer: str):
     if answer.lower() != 'да':
@@ -42,6 +44,7 @@ async def check_answer(message: Message, answer: str):
         await state_dispenser.set(message.peer_id, MenuSG.menuGroupInput)
 
 
+@labeler.message(text='[club218297281|@studotbot] <group>', state=MenuSG.menuGroupInput)
 @labeler.message(text='<group>', state=MenuSG.menuGroupInput)
 async def group_input(message: Message, group: str):
     keyboard = (
@@ -53,12 +56,13 @@ async def group_input(message: Message, group: str):
         .add(Text('4'))
     )
     await message.answer(
-        "Отлично, теперь укажи свой курс",
+        "Отлично, теперь укажи свой курс цифрой от 1 до 4",
         keyboard=keyboard
     )
     await state_dispenser.set(message.peer_id, MenuSG.menuCourseInput, group=group)
 
 
+@labeler.message(text='[club218297281|@studotbot]<course>', state=MenuSG.menuCourseInput)
 @labeler.message(text='<course>', state=MenuSG.menuCourseInput)
 async def course_input(message: Message, course: str):
     group = message.state_peer.payload['group'].upper()

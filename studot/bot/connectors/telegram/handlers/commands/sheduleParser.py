@@ -3,8 +3,6 @@ import argparse
 import json
 from dataclasses import dataclass
 
-import shed_parse
-
 
 @dataclass(frozen=True)
 class SHEDULE_TIME:
@@ -28,11 +26,11 @@ class SHEDULE_TIME:
 
 
 class SheduleParser:
-    def __init__(self, dict_to_parse: dict) -> None:
-        self.dict = dict_to_parse
+    def __init__(self, filepath: str) -> None:
+        with open(filepath, 'r') as file:
+            self.dict = json.load(file)
 
-    def parse(self):
-        print('Start parsing doc')
+    async def parse(self) -> str:
         doc = self.dict
 
         for course, group in doc['Курс'].items():
@@ -50,26 +48,11 @@ class SheduleParser:
                             'Пара': subject,
                             'Время': time
                         }
-        print('Doc parsed')
-        return doc
+        result = await self._save(doc)
+        return result
 
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(
-        description='sum the integers at the command line')
-    parser.add_argument(
-        'input', metavar='str', type=str,
-        help='input file json')
-    parser.add_argument(
-        'output', metavar='str', type=str,
-        help='output file')
-    args = parser.parse_args()
-
-    with open(args.input, 'r') as file:
-        d = json.load(file)
-
-    sp = SheduleParser(d)
-    new_d = sp.parse()
-
-    with open(args.output, 'w') as file:
-        json.dump(new_d, file, indent=4, ensure_ascii=False)
+    async def _save(doc: dict) -> str:
+        filename = 'shedule.json'
+        with open(filename, 'w') as file:
+            json.dump(doc, file, ensure_ascii=False, indent=4)
+        return filename

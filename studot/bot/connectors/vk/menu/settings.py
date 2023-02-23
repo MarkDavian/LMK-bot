@@ -12,9 +12,13 @@ from bot.core.statistics.proxy.proxy_shedule_db import sheduleDB
 from bot.core.utils.types.userinfo import UserInfo
 
 
+@labeler.message(text='[club218297281|@studotbot] Настройки', state=MenuSG.start)
 @labeler.message(text='Настройки', state=MenuSG.start)
+@labeler.message(text='[club218297281|@studotbot] Назад', state=MenuSG.settings_changes)
 @labeler.message(text='Назад', state=MenuSG.settings_changes)
+@labeler.message(text='[club218297281|@studotbot] Назад', state=MenuSG.settings_shedule)
 @labeler.message(text='Назад', state=MenuSG.settings_shedule)
+@labeler.message(text='[club218297281|@studotbot] Назад', state=MenuSG.profile)
 @labeler.message(text='Назад', state=MenuSG.profile)
 async def menu_settings(message: Message):
     await state_dispenser.set(message.peer_id, MenuSG.start)
@@ -44,6 +48,7 @@ async def get_button_text(userInfo: UserInfo, type):
         return 'Включить'
 
 
+@labeler.message(text='[club218297281|@studotbot] Уведомление о заменах', state=MenuSG.start)
 @labeler.message(text='Уведомление о заменах', state=MenuSG.start)
 async def notify_changes(message: Message):
     await state_dispenser.set(message.peer_id, MenuSG.settings_changes)
@@ -61,6 +66,7 @@ async def notify_changes(message: Message):
     )
 
 
+@labeler.message(text='[club218297281|@studotbot] включить', state=MenuSG.settings_changes)
 @labeler.message(text='включить', state=MenuSG.settings_changes)
 async def notify_changes_enable(message: Message):
     userInfo = await get_user_info(message.from_id)
@@ -78,6 +84,8 @@ async def notify_changes_enable(message: Message):
         keyboard=keyboard
     )
 
+
+@labeler.message(text='[club218297281|@studotbot] выключить', state=MenuSG.settings_changes)
 @labeler.message(text='выключить', state=MenuSG.settings_changes)
 async def notify_changes_disable(message: Message):
     userInfo = await get_user_info(message.from_id)
@@ -96,6 +104,7 @@ async def notify_changes_disable(message: Message):
     )
 
 
+@labeler.message(text='[club218297281|@studotbot] Уведомление о расписании', state=MenuSG.start)
 @labeler.message(text='Уведомление о расписании', state=MenuSG.start)
 async def notify_shedule(message: Message):
     await state_dispenser.set(message.peer_id, MenuSG.settings_shedule)
@@ -113,6 +122,7 @@ async def notify_shedule(message: Message):
     )
 
 
+@labeler.message(text='[club218297281|@studotbot] включить', state=MenuSG.settings_shedule)
 @labeler.message(text='включить', state=MenuSG.settings_shedule)
 async def notify_shedule_enable(message: Message):
     userInfo = await get_user_info(message.from_id)
@@ -131,6 +141,7 @@ async def notify_shedule_enable(message: Message):
     )
 
 
+@labeler.message(text='[club218297281|@studotbot] выключить', state=MenuSG.settings_shedule)
 @labeler.message(text='выключить', state=MenuSG.settings_shedule)
 async def notify_shedule_disable(message: Message):
     userInfo = await get_user_info(message.from_id)
