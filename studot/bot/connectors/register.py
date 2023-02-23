@@ -1,5 +1,4 @@
 import asyncio
-import multiprocessing as mp
 
 from bot.connectors.telegram.registry import run_tg_bot
 from bot.connectors.vk.registry import run_vk_bot
